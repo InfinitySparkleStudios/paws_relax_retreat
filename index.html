@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Book in-home boarding for small dogs at Paws Relax Retreat. Nightly and long stays, pickup and drop-off, pay now.">
+<meta name="theme-color" content="#1F4D47">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paws Relax">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Paws Relax Retreat Bookings</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+:root{
+  --bg:#EEF3EF; --surface:#FFFFFF; --ink:#172321; --muted:#566864; --line:#D3DDD8;
+  --brand:#1F4D47; --brand-ink:#FFFFFF; --honey:#E3A53B; --honey-soft:#FBEFD8; --ok:#2F7A4F; --warn:#9A5B08;
+  --field:#F7FAF8;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Nunito Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#101917; --surface:#18231F; --ink:#E7EFEB; --muted:#9BB0AA; --line:#2C3B36;
+  --brand:#6FB5A8; --brand-ink:#0E1715; --honey:#EDB85A; --honey-soft:#33291A; --ok:#6CC495; --warn:#E6B15E; --field:#1D2A26;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#101917; --surface:#18231F; --ink:#E7EFEB; --muted:#9BB0AA; --line:#2C3B36;
+  --brand:#6FB5A8; --brand-ink:#0E1715; --honey:#EDB85A; --honey-soft:#33291A; --ok:#6CC495; --warn:#E6B15E; --field:#1D2A26;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:24px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.brand{display:flex;gap:14px;align-items:center}
+.paw{width:48px;height:48px;border-radius:14px;background:var(--brand);display:grid;place-items:center;flex:none}
+.paw svg{width:28px;height:28px;fill:var(--brand-ink)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.1;margin:0;text-wrap:balance}
+.tag{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+.rates{display:flex;flex-wrap:wrap;gap:8px}
+.rate{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.88rem;font-variant-numeric:tabular-nums}
+.rate b{font-family:var(--display);font-size:1rem}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:5px;width:fit-content;max-width:100%}
+.tabs button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--muted);padding:9px 18px;border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+form{display:flex;flex-direction:column;gap:18px}
+fieldset{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:18px;margin:0;display:flex;flex-direction:column;gap:14px;min-width:0}
+legend{font-family:var(--display);font-weight:600;font-size:1.05rem;padding:0 6px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:.84rem;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;font-weight:400;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+.dog{border:1px dashed var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.dog-head{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.linkbtn{font:inherit;font-size:.84rem;background:none;border:0;color:var(--brand);cursor:pointer;font-weight:700;padding:4px}
+.check{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400;color:var(--ink);font-size:.9rem}
+.check input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:var(--brand)}
+.note{background:var(--honey-soft);border-radius:10px;padding:10px 12px;font-size:.86rem;color:var(--ink)}
+.note b{color:var(--warn)}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:12px 16px;border:0;cursor:pointer;text-align:center;text-decoration:none;display:block}
+.btn.primary{background:var(--brand);color:var(--brand-ink)}
+.btn.honey{background:var(--honey);color:#1A1405}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+@media (max-width:860px){aside{position:static}}
+.sum-head{background:var(--brand);color:var(--brand-ink);padding:16px 18px}
+.sum-head small{opacity:.8;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;font-weight:700}
+.total{font-family:var(--display);font-weight:800;font-size:2.2rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.sum-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.lines{display:flex;flex-direction:column;gap:6px;font-size:.88rem;font-variant-numeric:tabular-nums}
+.line{display:flex;justify-content:space-between;gap:10px}
+.line span:last-child{white-space:nowrap}
+.line.disc{color:var(--ok)}
+.ref{display:flex;justify-content:space-between;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:.85rem}
+.ref code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:.95rem}
+.muted{color:var(--muted);font-size:.84rem;margin:0}
+.err{color:#B3261E;font-size:.85rem;margin:0}
+.pay{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.bank{font-size:.85rem;display:grid;grid-template-columns:auto 1fr;gap:2px 12px}
+.bank dt{color:var(--muted)} .bank dd{margin:0;font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.88rem}
+footer{color:var(--muted);font-size:.8rem;text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="paw" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="10" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="14.5" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3.2 0-6.5 4.2-6.5 6.8 0 1.9 1.6 2.7 3.3 2.7 1.3 0 2-.6 3.2-.6s1.9.6 3.2.6c1.7 0 3.3-.8 3.3-2.7C18.5 15.2 15.2 11 12 11z"/></svg></div>
+      <div>
+        <h1>Paws Relax Retreat</h1>
+        <p class="tag">In-home comfort boarding for small dogs · Safe · Secure · Loving care</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><div class="rates" id="rateChips"></div><button type="button" id="installBtn" class="btn honey" hidden style="padding:8px 14px">Install app</button></div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-book" aria-selected="true">Book a stay</button>
+    <button role="tab" id="tab-extend" aria-selected="false">Extend a stay</button>
+  </div>
+
+  <!-- BOOK -->
+  <section id="panel-book" class="grid">
+    <form id="bookForm" novalidate>
+      <fieldset>
+        <legend>Your details</legend>
+        <div class="row">
+          <label>Full name<input id="b-name" autocomplete="name" required></label>
+          <label>Phone (WhatsApp)<input id="b-phone" type="tel" autocomplete="tel" required></label>
+        </div>
+        <div class="row">
+          <label>Email<input id="b-email" type="email" autocomplete="email"></label>
+          <label>Home address<input id="b-address" autocomplete="street-address"></label>
+        </div>
+        <div class="row">
+          <label>Emergency contact name<input id="b-ecname"></label>
+          <label>Emergency contact number<input id="b-ecphone" type="tel"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Dates</legend>
+        <label>Type of stay<select id="b-type"><option value="nightly">Nightly stay (per night)</option><option value="long">Long stay (monthly price as agreed)</option></select></label>
+        <div id="longBox" class="dog" hidden>
+          <div class="row">
+            <label>Agreed price per month (all dogs), R<input id="l-price" type="number" min="0" step="50" inputmode="numeric" placeholder="e.g. 3200"></label>
+            <label>Number of months<select id="l-months"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></label>
+          </div>
+          <label>Extra days after the last full month<input id="l-extra" type="number" min="0" max="29" value="0" inputmode="numeric"></label>
+          <p class="muted">Fill in the monthly price agreed with Paws Relax Retreat. Extra days are charged pro-rata (monthly price ÷ 30 per day). Each month is paid in advance.</p>
+        </div>
+        <div class="row">
+          <label>Check-in date<input id="b-in" type="date" required></label>
+          <label>Check-in time<input id="b-intime" type="time" value="09:00"></label>
+        </div>
+        <div class="row">
+          <label>Check-out date<input id="b-out" type="date" required></label>
+          <label>Check-out time<input id="b-outtime" type="time" value="16:00"></label>
+        </div>
+        <p class="note" id="festiveNote" hidden></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Pickup &amp; drop-off service</legend>
+        <p class="muted">We can collect your dog(s) and bring them home. The fee is quoted per client, so fill in the amount agreed with Paws Relax Retreat.</p>
+        <label class="check"><input type="checkbox" id="t-pick"> Please collect my dog(s) at check-in</label>
+        <div class="row" id="t-pickBox" hidden>
+          <label>Agreed pickup fee, R<input id="t-pickFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
+          <label>Pickup address<input id="t-pickAddr" placeholder="Same as home address"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="t-drop"> Please bring my dog(s) home at check-out</label>
+        <div class="row" id="t-dropBox" hidden>
+          <label>Agreed drop-off fee, R<input id="t-dropFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
+          <label>Drop-off address<input id="t-dropAddr" placeholder="Same as home address"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your dogs</legend>
+        <div id="dogs" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button type="button" class="btn ghost" id="addDog">+ Add another dog from the same home</button>
+        <p class="muted">Second and third dogs from the same household get <span id="discTxt"></span> off.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Health &amp; agreement</legend>
+        <label class="check"><input type="checkbox" id="c-vacc"> My dog(s) are up to date on Rabies, DHPP and Bordetella vaccinations.</label>
+        <label class="check"><input type="checkbox" id="c-food"> I will provide my dog's food, and I have disclosed all behaviour and medical issues above.</label>
+        <label class="check"><input type="checkbox" id="c-flea"> I authorise flea/tick treatment if fleas are found on arrival (Capstar or vet-approved spot-on). Treatment cost is added to my invoice.</label>
+        <label class="check"><input type="checkbox" id="c-indem"> I accept all risks, authorise veterinary care if needed, and understand Paws Relax Retreat takes all reasonable care but is not liable for illness, injury or escape due to unforeseen events.</label>
+      </fieldset>
+    </form>
+
+    <aside aria-live="polite">
+      <div class="sum-head">
+        <small id="b-label">Amount due</small>
+        <div class="total" id="b-total">R0</div>
+        <div id="b-nights" style="font-size:.9rem;opacity:.9"></div>
+      </div>
+      <div class="sum-body">
+        <div class="lines" id="b-lines"></div>
+        <div class="ref"><span>Booking reference</span><code id="b-ref"></code></div>
+        <p class="err" id="b-err" hidden></p>
+        <a class="btn primary" id="b-wa" target="_blank" rel="noopener">Send booking on WhatsApp</a>
+        <button type="button" class="btn ghost" id="b-copy">Copy booking details</button>
+        <div class="pay" id="b-pay"></div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- EXTEND -->
+  <section id="panel-extend" class="grid" hidden>
+    <form id="extForm" novalidate>
+      <fieldset>
+        <legend>Your booking</legend>
+        <div class="row">
+          <label>Booking reference<input id="e-ref" placeholder="PRR-…"></label>
+          <label>Your name<input id="e-name" autocomplete="name"></label>
+        </div>
+        <div class="row">
+          <label>Dog name(s)<input id="e-dogs"></label>
+          <label>Phone (WhatsApp)<input id="e-phone" type="tel" autocomplete="tel"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>New dates</legend>
+        <div class="row">
+          <label>Current check-out date<input id="e-cur" type="date"></label>
+          <label>New check-out date<input id="e-new" type="date"></label>
+        </div>
+        <div class="row">
+          <label>Small dogs<select id="e-small"><option>0</option><option selected>1</option><option>2</option><option>3</option></select></label>
+          <label>Medium dogs<select id="e-medium"><option selected>0</option><option>1</option><option>2</option><option>3</option></select></label>
+        </div>
+        <label>New check-out time<input id="e-time" type="time" value="16:00"></label>
+        <p class="muted">Extensions depend on availability. We'll confirm on WhatsApp before you pay.</p>
+      </fieldset>
+    </form>
+    <aside aria-live="polite">
+      <div class="sum-head">
+        <small>Extra amount due</small>
+        <div class="total" id="e-total">R0</div>
+        <div id="e-nights" style="font-size:.9rem;opacity:.9"></div>
+      </div>
+      <div class="sum-body">
+        <div class="lines" id="e-lines"></div>
+        <p class="err" id="e-err" hidden></p>
+        <a class="btn primary" id="e-wa" target="_blank" rel="noopener">Request extension on WhatsApp</a>
+        <div class="pay" id="e-pay"></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer>Paws Relax Retreat · 079 040 0809 · Owner provides food · Rates are per night · Pickup &amp; drop-off service available</footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== SETTINGS — change these to update prices and payments ===== */
+const SETTINGS = {
+  whatsapp: "27790400809",           // 079 040 0809
+  phoneDisplay: "079 040 0809",
+  rates:   { small: 130, medium: 150 },      // per night, normal season
+  festive: { from: "12-01", to: "01-10",     // MM-DD, festive season window
+             rates: { small: 130, medium: 150 } }, // raise these when festive prices change
+  familyDiscount: 0.10,              // 2nd & 3rd dog from same home
+  maxDogs: 3,
+  payLink: "",                       // e.g. your Yoco / PayFast / SnapScan link
+  bank: null                         // e.g. {bank:"FNB", name:"Paws Relax Retreat", acc:"...", branch:"250655", type:"Cheque"}
+};
+/* ================================================================== */
+
+const $ = id => document.getElementById(id);
+const R = n => "R" + Math.round(n).toLocaleString("en-ZA").replace(/,/g," ");
+const SIZE = {small:"Small (under 10 kg)", medium:"Medium (10–25 kg)"};
+
+function iso(d){return d.toISOString().slice(0,10)}
+function parse(s){ if(!s) return null; const [y,m,d]=s.split("-").map(Number); return new Date(Date.UTC(y,m-1,d)); }
+function fmt(s){ const d=parse(s); return d? d.toLocaleDateString("en-ZA",{weekday:"short",day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}):"" }
+function isFestive(d){ const md=iso(d).slice(5); const {from,to}=SETTINGS.festive; return from<=to ? (md>=from&&md<=to) : (md>=from||md<=to); }
+function festiveDiffers(){ const f=SETTINGS.festive.rates, r=SETTINGS.rates; return f.small!==r.small||f.medium!==r.medium; }
+
+/* Price nights between two dates for a list of sizes. Returns lines + total */
+function price(inS,outS,sizes){
+  const a=parse(inS), b=parse(outS);
+  if(!a||!b||b<=a||!sizes.length) return null;
+  const nightsList=[]; for(let d=new Date(a); d<b; d.setUTCDate(d.getUTCDate()+1)) nightsList.push(new Date(d));
+  const fest=nightsList.filter(isFestive).length, norm=nightsList.length-fest;
+  // most expensive dog pays full; others get family discount
+  const order=[...sizes].sort((x,y)=>SETTINGS.rates[y]-SETTINGS.rates[x]);
+  const lines=[]; let total=0;
+  order.forEach((sz,i)=>{
+    const base=norm*SETTINGS.rates[sz] + fest*SETTINGS.festive.rates[sz];
+    lines.push({label:`Dog ${i+1} · ${sz} · ${nightsList.length} night${nightsList.length>1?"s":""}`, amt:base});
+    total+=base;
+    if(i>0){ const d=base*SETTINGS.familyDiscount; lines.push({label:`Family discount ${SETTINGS.familyDiscount*100}%`, amt:-d, disc:true}); total-=d; }
+  });
+  return {nights:nightsList.length, fest, lines, total:Math.round(total)};
+}
+
+function renderLines(el,p){
+  el.innerHTML = p ? p.lines.map(l=>`<div class="line${l.disc?' disc':''}"><span>${l.label}</span><span>${l.amt<0?"−":""}${R(Math.abs(l.amt))}</span></div>`).join("") : '<p class="muted">Choose your dates to see the price.</p>';
+}
+function payBlock(el,amount,ref,label,extraHtml){
+  let h=`<p class="muted" style="font-weight:700;color:var(--ink)">Pay now · use reference <code>${ref}</code></p>`+(extraHtml||"");
+  if(SETTINGS.payLink) h+=`<a class="btn honey" href="${SETTINGS.payLink}" target="_blank" rel="noopener" ${amount?'':'aria-disabled="true"'}>${label||"Pay"} ${R(amount)} now</a>`;
+  if(SETTINGS.bank){ const b=SETTINGS.bank;
+    h+=`<dl class="bank"><dt>Bank</dt><dd>${b.bank}</dd><dt>Account name</dt><dd>${b.name}</dd><dt>Account no.</dt><dd>${b.acc}</dd><dt>Branch code</dt><dd>${b.branch}</dd><dt>Type</dt><dd>${b.type||""}</dd><dt>Reference</dt><dd>${ref}</dd></dl>`;
+  }
+  if(!SETTINGS.payLink && !SETTINGS.bank) h+=`<p class="muted">Payment details are sent with your WhatsApp confirmation. Please pay before drop-off.</p>`;
+  el.innerHTML=h;
+}
+function waLink(text){ return `https://wa.me/${SETTINGS.whatsapp}?text=${encodeURIComponent(text)}`; }
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2200); }
+
+/* ---------- header chips ---------- */
+$("rateChips").innerHTML = `<span class="rate">Small <b>${R(SETTINGS.rates.small)}</b>/night</span><span class="rate">Medium <b>${R(SETTINGS.rates.medium)}</b>/night</span><span class="rate">Long stay <b>monthly</b> as agreed</span><span class="rate">Pickup &amp; drop-off <b>on request</b></span>`;
+$("discTxt").textContent = SETTINGS.familyDiscount*100 + "%";
+
+/* ---------- dogs ---------- */
+let dogCount=0;
+function addDog(){
+  if(dogCount>=SETTINGS.maxDogs) return;
+  dogCount++; const n=dogCount;
+  const d=document.createElement("div"); d.className="dog"; d.dataset.n=n;
+  d.innerHTML=`<div class="dog-head"><span>Dog ${n}</span>${n>1?'<button type="button" class="linkbtn" data-remove>Remove</button>':''}</div>
+  <div class="row"><label>Name<input id="d${n}-name" required></label>
+  <label>Size<select id="d${n}-size"><option value="small">${SIZE.small}</option><option value="medium">${SIZE.medium}</option></select></label></div>
+  <div class="row"><label>Breed<input id="d${n}-breed"></label>
+  <label>Age<input id="d${n}-age" placeholder="e.g. 4 years"></label></div>
+  <div class="row"><label>Sex<select id="d${n}-sex"><option>Female</option><option>Male</option></select></label>
+  <label>Sterilised<select id="d${n}-ster"><option>Yes</option><option>No</option></select></label></div>
+  <label>Last vaccination date<input id="d${n}-vacc" type="date"></label>
+  <label>Medical conditions / allergies<textarea id="d${n}-med"></textarea></label>
+  <label>Feeding instructions<textarea id="d${n}-feed"></textarea></label>
+  <label>Behaviour notes<textarea id="d${n}-beh"></textarea></label>`;
+  $("dogs").appendChild(d);
+  d.querySelectorAll("input,select,textarea").forEach(x=>x.addEventListener("input",updateBook));
+  const rm=d.querySelector("[data-remove]"); if(rm) rm.onclick=()=>{d.remove(); renumber(); updateBook();};
+  $("addDog").hidden = dogCount>=SETTINGS.maxDogs;
+  updateBook();
+}
+function renumber(){ dogCount=$("dogs").children.length; $("addDog").hidden = dogCount>=SETTINGS.maxDogs; }
+function dogs(){ return [...$("dogs").children].map(el=>{const n=el.dataset.n,g=k=>($(`d${n}-${k}`)||{}).value||""; return {name:g("name").trim(),size:g("size"),breed:g("breed"),age:g("age"),sex:g("sex"),ster:g("ster"),vacc:g("vacc"),med:g("med"),feed:g("feed"),beh:g("beh")};}); }
+
+/* ---------- reference ---------- */
+function makeRef(){ const a=$("b-in").value.replace(/-/g,"").slice(2)||"000000"; const nm=(dogs()[0]?.name||"DOG").replace(/[^A-Za-z]/g,"").slice(0,4).toUpperCase()||"DOG"; return `PRR-${a}-${nm}`; }
+
+/* ---------- booking ---------- */
+/* Pickup & drop-off: quoted per client */
+function transport(){
+  const t={lines:[],pick:0,drop:0,missing:[]};
+  $("t-pickBox").hidden=!$("t-pick").checked; $("t-dropBox").hidden=!$("t-drop").checked;
+  const home=$("b-address").value.trim();
+  if($("t-pick").checked){ t.pick=Math.round(parseFloat($("t-pickFee").value)||0); t.pickAddr=$("t-pickAddr").value.trim()||home;
+    if(!t.pick) t.missing.push("the agreed pickup fee"); if(!t.pickAddr) t.missing.push("the pickup address");
+    t.lines.push({label:"Pickup service", amt:t.pick}); }
+  if($("t-drop").checked){ t.drop=Math.round(parseFloat($("t-dropFee").value)||0); t.dropAddr=$("t-dropAddr").value.trim()||home;
+    if(!t.drop) t.missing.push("the agreed drop-off fee"); if(!t.dropAddr) t.missing.push("the drop-off address");
+    t.lines.push({label:"Drop-off service", amt:t.drop}); }
+  return t;
+}
+function withTransport(p){
+  if(!p) return p; const t=transport();
+  return {...p, lines:[...p.lines,...t.lines], total:p.total+t.pick+t.drop, transport:t};
+}
+
+/* Long stay: agreed monthly price for all dogs, plus pro-rata extra days */
+function isLong(){ return $("b-type").value==="long"; }
+function addMonths(s,n,days){ const d=parse(s); if(!d) return null; const day=d.getUTCDate(); d.setUTCMonth(d.getUTCMonth()+n); if(d.getUTCDate()<day) d.setUTCDate(0); d.setUTCDate(d.getUTCDate()+(days||0)); return d; }
+function longPrice(){
+  const M=parseFloat($("l-price").value)||0, n=+$("l-months").value, e=Math.max(0,Math.min(29,parseInt($("l-extra").value)||0));
+  if(!M||!$("b-in").value) return null;
+  const lines=[{label:`Long stay · ${n} month${n>1?"s":""} × ${R(M)}`, amt:M*n}];
+  if(e) lines.push({label:`Extra ${e} day${e>1?"s":""} (pro-rata ${R(M/30)}/day)`, amt:e*M/30});
+  const total=Math.round(M*n+e*M/30);
+  const sched=[]; for(let i=0;i<n;i++) sched.push({due:iso(addMonths($("b-in").value,i,0)), amt:M, label:`Month ${i+1}`});
+  if(e) sched.push({due:iso(addMonths($("b-in").value,n,0)), amt:Math.round(e*M/30), label:`Extra ${e} days`});
+  const t=transport();
+  if(t.pick){ lines.push(t.lines.find(l=>l.label.startsWith("Pickup"))); sched[0].amt+=t.pick; sched[0].label+=" + pickup"; }
+  if(t.drop){ lines.push(t.lines.find(l=>l.label.startsWith("Drop"))); const last=sched[sched.length-1]; last.amt+=t.drop; last.label+=" + drop-off"; }
+  return {long:true, months:n, extra:e, monthly:M, lines, total:total+t.pick+t.drop, sched, first:sched[0].amt, transport:t};
+}
+function syncType(){
+  const L=isLong(); $("longBox").hidden=!L; $("b-out").readOnly=L;
+  if(L){ const d=addMonths($("b-in").value,+$("l-months").value,parseInt($("l-extra").value)||0); if(d) $("b-out").value=iso(d); }
+}
+
+function updateBook(){
+  syncType();
+  $("b-label").textContent = isLong()? "Total for long stay" : "Amount due";
+  if(isLong()) return updateLong();
+  const ds=dogs(), p=withTransport(price($("b-in").value,$("b-out").value,ds.map(d=>d.size)));
+  renderLines($("b-lines"),p);
+  $("b-total").textContent=R(p?p.total:0);
+  $("b-nights").textContent = p ? `${p.nights} night${p.nights>1?"s":""} · ${ds.length} dog${ds.length>1?"s":""}` : "";
+  const ref=makeRef(); $("b-ref").textContent=ref;
+  // festive note
+  const fn=$("festiveNote");
+  if(p && p.fest){ fn.hidden=false; fn.innerHTML = festiveDiffers()? `<b>Festive season:</b> ${p.fest} of your nights fall in the festive period and are charged at festive rates.` : `<b>Festive season:</b> ${p.fest} of your nights fall over the festive period. Space is limited, so book early. Our festive flea &amp; tick policy applies.`; }
+  else fn.hidden=true;
+  // validation
+  const miss=bookMissing(ds,p);
+  const err=$("b-err");
+  if(miss.length){ err.hidden=false; err.textContent="Still needed: "+miss.join(", ")+"."; $("b-wa").setAttribute("aria-disabled","true"); $("b-wa").removeAttribute("href"); }
+  else { err.hidden=true; $("b-wa").removeAttribute("aria-disabled"); $("b-wa").href=waLink(bookText(ds,p,ref)); }
+  payBlock($("b-pay"),p?p.total:0,ref);
+}
+function bookMissing(ds,p){
+  const miss=[];
+  if(!$("b-name").value.trim()) miss.push("your name");
+  if(!$("b-phone").value.trim()) miss.push("your phone number");
+  if(isLong()&&!(parseFloat($("l-price").value)>0)) miss.push("the agreed monthly price");
+  if(!p) miss.push(isLong()?"a check-in date":"check-in and check-out dates");
+  if(ds.some(d=>!d.name)) miss.push("each dog's name");
+  miss.push(...transport().missing);
+  if(!["c-vacc","c-food","c-flea","c-indem"].every(id=>$(id).checked)) miss.push("the four agreement ticks");
+  return miss;
+}
+function updateLong(){
+  const ds=dogs(), p=longPrice();
+  renderLines($("b-lines"),p);
+  if(!p) $("b-lines").innerHTML='<p class="muted">Enter the agreed monthly price and check-in date to see the total.</p>';
+  $("b-total").textContent=R(p?p.total:0);
+  $("b-nights").textContent=p?`Long stay · ${p.months} month${p.months>1?"s":""}${p.extra?` + ${p.extra} days`:""} · ${ds.length} dog${ds.length>1?"s":""}`:"Long stay";
+  const ref=makeRef()+"-LS"; $("b-ref").textContent=ref;
+  $("festiveNote").hidden=true;
+  const miss=bookMissing(ds,p), err=$("b-err");
+  if(miss.length){ err.hidden=false; err.textContent="Still needed: "+miss.join(", ")+"."; $("b-wa").setAttribute("aria-disabled","true"); $("b-wa").removeAttribute("href"); }
+  else { err.hidden=true; $("b-wa").removeAttribute("aria-disabled"); $("b-wa").href=waLink(bookText(ds,p,ref)); }
+  const sched = p ? `<div class="lines">${p.sched.map(s=>`<div class="line"><span>${s.label} · due ${fmt(s.due)}</span><span>${R(s.amt)}</span></div>`).join("")}</div>` : "";
+  payBlock($("b-pay"),p?p.first:0,ref,"Pay first month",sched);
+}
+function currentBook(){ const ds=dogs(); return {ds, p: isLong()? longPrice() : withTransport(price($("b-in").value,$("b-out").value,ds.map(d=>d.size))), ref: isLong()? makeRef()+"-LS" : makeRef()}; }
+function bookText(ds,p,ref){
+  const L=[`🐾 NEW BOOKING – Paws Relax Retreat`,`Ref: ${ref}`,``,
+  `Owner: ${$("b-name").value}`,`Phone: ${$("b-phone").value}`];
+  if($("b-email").value) L.push(`Email: ${$("b-email").value}`);
+  if($("b-address").value) L.push(`Address: ${$("b-address").value}`);
+  if($("b-ecname").value||$("b-ecphone").value) L.push(`Emergency: ${$("b-ecname").value} ${$("b-ecphone").value}`);
+  L.push(``,`Check-in: ${fmt($("b-in").value)} ${$("b-intime").value}`,`Check-out: ${fmt($("b-out").value)} ${$("b-outtime").value}`);
+  const tr=p.transport||{}; if(tr.pick) L.push(`🚗 PICKUP at check-in from: ${tr.pickAddr} (agreed ${R(tr.pick)})`); if(tr.drop) L.push(`🚗 DROP-OFF at check-out to: ${tr.dropAddr} (agreed ${R(tr.drop)})`);
+  L.push(``);
+  ds.forEach((d,i)=>{ L.push(`Dog ${i+1}: ${d.name} (${d.size}${d.breed?", "+d.breed:""}${d.age?", "+d.age:""}, ${d.sex}, sterilised: ${d.ster})`);
+    if(d.vacc) L.push(`  Last vaccination: ${fmt(d.vacc)}`); if(d.med) L.push(`  Medical: ${d.med}`); if(d.feed) L.push(`  Feeding: ${d.feed}`); if(d.beh) L.push(`  Behaviour: ${d.beh}`); });
+  L.push(``); if(p.long) L.push(`STAY TYPE: Long stay – agreed ${R(p.monthly)} per month (all dogs)`);
+  p.lines.forEach(l=>L.push(`${l.label}: ${l.amt<0?"-":""}${R(Math.abs(l.amt))}`));
+  L.push(`TOTAL: ${R(p.total)}`);
+  if(p.long){ L.push(``,`Payment schedule (monthly in advance):`); p.sched.forEach(s=>L.push(`  ${s.label} – ${fmt(s.due)}: ${R(s.amt)}`)); L.push(`DUE NOW: ${R(p.first)}`); }
+  L.push(``,`✔ Vaccinations up to date ✔ Food provided by owner ✔ Flea treatment authorised ✔ Indemnity accepted`);
+  return L.join("\n");
+}
+$("b-copy").onclick=()=>{
+  const {ds,p,ref}=currentBook();
+  if(!p){ toast(isLong()?"Enter the monthly price and check-in date first":"Choose your dates first"); return; }
+  const txt=bookText(ds,p,ref);
+  navigator.clipboard.writeText(txt).then(()=>toast("Booking details copied")).catch(()=>toast("Copy blocked here. Use the WhatsApp button instead"));
+};
+
+/* ---------- extension ---------- */
+function updateExt(){
+  const sizes=[...Array(+$("e-small").value).fill("small"),...Array(+$("e-medium").value).fill("medium")];
+  const p=price($("e-cur").value,$("e-new").value,sizes);
+  renderLines($("e-lines"),p);
+  $("e-total").textContent=R(p?p.total:0);
+  $("e-nights").textContent=p?`${p.nights} extra night${p.nights>1?"s":""}`:"";
+  const ref=($("e-ref").value.trim()||"PRR")+"-EXT";
+  const miss=[]; if(!$("e-name").value.trim()) miss.push("your name"); if(!$("e-dogs").value.trim()) miss.push("dog name(s)"); if(!p) miss.push("a new check-out date after the current one");
+  const err=$("e-err");
+  if(miss.length){ err.hidden=false; err.textContent="Still needed: "+miss.join(", ")+"."; $("e-wa").setAttribute("aria-disabled","true"); $("e-wa").removeAttribute("href"); }
+  else { err.hidden=true; $("e-wa").removeAttribute("aria-disabled");
+    const L=[`🐾 EXTEND STAY – Paws Relax Retreat`,`Booking ref: ${$("e-ref").value||"(not given)"}`,`Owner: ${$("e-name").value}`,`Phone: ${$("e-phone").value}`,`Dogs: ${$("e-dogs").value}`,``,
+      `Current check-out: ${fmt($("e-cur").value)}`,`New check-out: ${fmt($("e-new").value)} ${$("e-time").value}`,``];
+    p.lines.forEach(l=>L.push(`${l.label}: ${l.amt<0?"-":""}${R(Math.abs(l.amt))}`)); L.push(`EXTRA DUE: ${R(p.total)}`,`Payment ref: ${ref}`);
+    $("e-wa").href=waLink(L.join("\n")); }
+  payBlock($("e-pay"),p?p.total:0,ref);
+}
+
+/* ---------- tabs ---------- */
+function show(which){
+  const ext = which==="extend";
+  $("tab-book").setAttribute("aria-selected",!ext); $("tab-extend").setAttribute("aria-selected",ext);
+  $("panel-book").hidden=ext; $("panel-extend").hidden=!ext;
+}
+$("tab-book").onclick=()=>show("book"); $("tab-extend").onclick=()=>show("extend");
+if(location.hash==="#extend") show("extend");
+
+/* ---------- init with sensible example dates ---------- */
+const today=new Date(); const t=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()));
+const fri=new Date(t); fri.setUTCDate(t.getUTCDate()+((5-t.getUTCDay()+7)%7||7));
+const mon=new Date(fri); mon.setUTCDate(fri.getUTCDate()+3);
+$("b-in").value=iso(fri); $("b-out").value=iso(mon); $("b-in").min=iso(t); $("b-out").min=iso(t);
+const tue=new Date(mon); tue.setUTCDate(mon.getUTCDate()+2); $("e-cur").value=iso(mon); $("e-new").value=iso(tue);
+$("addDog").onclick=addDog; addDog();
+document.querySelectorAll("#bookForm input,#bookForm select,#bookForm textarea").forEach(x=>x.addEventListener("input",updateBook));
+document.querySelectorAll("#bookForm input[type=checkbox]").forEach(x=>x.addEventListener("change",updateBook));
+document.querySelectorAll("#extForm input,#extForm select").forEach(x=>x.addEventListener("input",updateExt));
+$("b-in").addEventListener("change",()=>{ if($("b-out").value<=$("b-in").value){const d=parse($("b-in").value); d.setUTCDate(d.getUTCDate()+1); $("b-out").value=iso(d);} updateBook(); });
+updateExt();
+</script>
+
+
+<script>
+// Offline + install support
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e; document.getElementById("installBtn").hidden=false; });
+document.getElementById("installBtn").addEventListener("click",async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; document.getElementById("installBtn").hidden=true; });
+window.addEventListener("appinstalled",()=>{ document.getElementById("installBtn").hidden=true; });
+</script>
+
+</body>
+</html>
