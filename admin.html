@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#5A3216">
+<title>Paws Admin</title>
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+:root{
+  --bg:#FBF5EA; --surface:#FFFFFF; --ink:#2B1A0E; --muted:#7A5E46; --line:#EADBC4;
+  --brand:#5A3216; --brand-ink:#FFF8EC; --honey:#C8962E; --honey-soft:#F8EBCF; --ok:#2F7A4F; --bad:#B3261E; --field:#FFFBF4;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Nunito Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark; --bg:#1B130D; --surface:#251A12; --ink:#F3E6D3; --muted:#C2A98C; --line:#3C2C1F;
+  --brand:#D9A65A; --brand-ink:#1B130D; --honey:#E2B65E; --honey-soft:#3A2B17; --ok:#6CC495; --bad:#F2918A; --field:#2C1F15;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}
+.brand img{width:44px;height:44px;border-radius:12px}
+h1{font-family:var(--display);font-weight:800;font-size:1.5rem;margin:0}
+h2{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0}
+.muted{color:var(--muted);font-size:.88rem;margin:0}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:5px;flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--honey);color:#1A1405;font-size:.75rem;text-align:center;margin-left:4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:10px 14px;border:0;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.primary{background:var(--brand);color:var(--brand-ink)}
+.btn.honey{background:var(--honey);color:#1A1405}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn[disabled]{opacity:.5;cursor:progress}
+label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;font-weight:600;color:var(--muted)}
+input,textarea,select{font:inherit;font-weight:400;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
+textarea{min-height:120px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.pay{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+@media (max-width:640px){.pay{grid-template-columns:1fr}}
+.amt{font-family:var(--display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.actions label{width:140px}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;white-space:nowrap}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--field)}
+td.wrap{white-space:normal;min-width:180px}
+.num{text-align:right}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--honey-soft)}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.pill.bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.msg{font-size:.9rem;min-height:1.3em}
+.err{color:var(--bad)}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:0;display:flex;flex-direction:column;gap:10px}
+legend{font-weight:700;padding:0 6px}
+.sticky{position:sticky;bottom:10px}
+.login{max-width:380px;margin:40px auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><img src="icons/icon-192.png" alt=""><div><h1>Paws Admin</h1><p class="muted" id="who"></p></div></div>
+    <button class="btn ghost" id="signOut" hidden>Sign out</button>
+  </header>
+
+  <!-- sign in -->
+  <form class="card login" id="loginForm" hidden>
+    <h2>Sign in</h2>
+    <p class="muted">Use your Infinity CRM owner login.</p>
+    <label>Email<input id="email" type="email" autocomplete="username" required></label>
+    <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
+    <button class="btn primary" type="submit" id="loginBtn">Sign in</button>
+    <p class="msg err" id="loginMsg"></p>
+  </form>
+
+  <main id="app" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="payments" aria-selected="true">Payments to check <span class="badge" id="claimCount">0</span></button>
+      <button role="tab" data-tab="bookings" aria-selected="false">Bookings</button>
+      <button role="tab" data-tab="ledger" aria-selected="false">Ledger</button>
+      <button role="tab" data-tab="settings" aria-selected="false">Business settings</button>
+    </div>
+
+    <section data-panel="payments" style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+      <p class="muted">Check that each payment reflects in the Capitec account, then confirm it. Only confirmed payments go into the ledger.</p>
+      <div id="payList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </section>
+
+    <section data-panel="bookings" hidden style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+      <div class="actions">
+        <label>Show<select id="bkFilter"><option value="upcoming">Upcoming &amp; current</option><option value="unpaid">Not fully paid</option><option value="all">All bookings</option></select></label>
+      </div>
+      <div class="table"><table><thead><tr><th>Ref</th><th>Type</th><th>Client</th><th>Dogs</th><th>In</th><th>Out</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th><th>Status</th></tr></thead><tbody id="bkRows"></tbody></table></div>
+    </section>
+
+    <section data-panel="ledger" hidden style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+      <p class="muted">Confirmed payments only (the facts). Download them in the same columns as your IBMS ledger, as an Excel file (opens in Excel and LibreOffice) or CSV, and paste them into the Paws ledger.</p>
+      <div class="actions">
+        <label>From<input type="date" id="lgFrom"></label>
+        <label>To<input type="date" id="lgTo"></label>
+        <label>Rows<select id="lgWhich"><option value="new">Not yet exported</option><option value="all">All in period</option></select></label>
+        <button class="btn primary" id="lgXlsx">Download Excel (.xlsx)</button>
+        <button class="btn ghost" id="lgCsv">Download CSV</button>
+      </div>
+      <p class="muted" id="lgSum"></p>
+      <div class="table"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="num">Money in</th><th>Exported</th></tr></thead><tbody id="lgRows"></tbody></table></div>
+    </section>
+
+    <section data-panel="settings" hidden style="margin-top:14px">
+      <form id="setForm" style="display:flex;flex-direction:column;gap:12px"></form>
+    </section>
+  </main>
+  <p class="msg" id="msg"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SUPABASE = { url: "https://zyxwadchlypfkwkqprdm.supabase.co", key: "sb_publishable_mwmgwUsAB7cPI4F1T0AyjA_qOsVfe2A" };
+const sb = window.supabase.createClient(SUPABASE.url, SUPABASE.key);
+const $ = id => document.getElementById(id);
+const R = n => "R" + Number(n||0).toLocaleString("en-ZA",{maximumFractionDigits:2}).replace(/,/g," ");
+const esc = t => String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const today = () => new Date().toISOString().slice(0,10);
+function msg(t,bad){ $("msg").textContent=t||""; $("msg").className="msg"+(bad?" err":""); }
+function busy(b,on){ b.disabled=on; }
+
+/* ---------- sign in ---------- */
+$("loginForm").onsubmit = async e => {
+  e.preventDefault(); busy($("loginBtn"),true); $("loginMsg").textContent="";
+  const {error} = await sb.auth.signInWithPassword({email:$("email").value.trim(), password:$("password").value});
+  busy($("loginBtn"),false);
+  if(error) $("loginMsg").textContent = "Could not sign in: " + error.message;
+};
+$("signOut").onclick = () => sb.auth.signOut();
+sb.auth.onAuthStateChange((_e, session) => session ? start(session) : showLogin());
+(async()=>{ const {data:{session}} = await sb.auth.getSession(); session ? start(session) : showLogin(); })();
+function showLogin(){ $("app").hidden=true; $("signOut").hidden=true; $("loginForm").hidden=false; $("who").textContent=""; }
+let started=false;
+async function start(session){
+  if(started) return; started=true;
+  $("loginForm").hidden=true; $("signOut").hidden=false; $("who").textContent=session.user.email;
+  // make sure this page can read Paws (owner/supervisor only)
+  const {error} = await sb.from("paws_settings").select("key").limit(1);
+  const {data:rows} = await sb.from("paws_settings").select("key");
+  if(error || !rows || !rows.length){ $("app").hidden=true; msg("This login is not an owner or supervisor in Infinity CRM, so it can't open Paws.", true); return; }
+  $("app").hidden=false;
+  await saveAdminUrl();
+  loadPayments(); loadBookings(); loadLedger(); loadSettings();
+}
+async function saveAdminUrl(){
+  const here = location.href.split("#")[0].split("?")[0];
+  const {data} = await sb.from("paws_settings").select("value").eq("key","admin_url").single();
+  if(data && data.value !== here) await sb.rpc("paws_save_settings",{p:{admin_url:here}});
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll("[data-panel]").forEach(p=>p.hidden=p.dataset.panel!==b.dataset.tab);
+});
+
+/* ---------- payments to check ---------- */
+async function loadPayments(){
+  const {data, error} = await sb.from("paws_payments")
+    .select("id, ref, client_name, phone, amount_claimed, date_paid, proof_path, note, created_at, booking:paws_bookings(total, paid_to_date, dog_names, status)")
+    .eq("status","claimed").order("created_at");
+  if(error) return msg("Could not load payments: "+error.message, true);
+  $("claimCount").textContent = data.length;
+  const box=$("payList");
+  if(!data.length){ box.innerHTML='<div class="card"><p class="muted">Nothing to check. New payment notices from clients appear here.</p></div>'; return; }
+  box.innerHTML = data.map(p=>`<div class="card pay" data-id="${p.id}">
+    <div>
+      <div class="amt">${R(p.amount_claimed)}</div>
+      <div><b>${esc(p.ref)}</b> · ${esc(p.client_name||"")} ${p.phone?"· "+esc(p.phone):""}</div>
+      <p class="muted">${p.booking?`Dogs: ${esc(p.booking.dog_names||"")} · Booking total ${R(p.booking.total)} · already paid ${R(p.booking.paid_to_date)}`:'<span class="pill bad">Reference not found in bookings</span>'}</p>
+      <p class="muted">Says paid ${p.date_paid?esc(p.date_paid):"(no date)"} · sent ${new Date(p.created_at).toLocaleString("en-ZA")}</p>
+      ${p.proof_path?`<button class="btn ghost" data-proof="${esc(p.proof_path)}">View proof of payment</button>`:'<p class="muted">No proof attached</p>'}
+    </div>
+    <div class="actions">
+      <label>Amount received<input type="number" step="0.01" min="0" value="${p.amount_claimed}" data-amt></label>
+      <button class="btn primary" data-ok>Money received – confirm</button>
+      <button class="btn ghost" data-no>Not received</button>
+      <div class="msg" data-out style="flex-basis:100%"></div>
+    </div></div>`).join("");
+  box.querySelectorAll("[data-proof]").forEach(b=>b.onclick=async()=>{
+    const w = window.open("", "_blank");   // open straight away so the browser doesn't block it
+    const {data:u, error} = await sb.storage.from("paws-proofs").createSignedUrl(b.dataset.proof, 300);
+    if(error){ if(w) w.close(); return msg("Could not open the proof: "+error.message, true); }
+    if(w) w.location = u.signedUrl; else location.href = u.signedUrl;
+  });
+  box.querySelectorAll(".pay").forEach(card=>{
+    const out=card.querySelector("[data-out]");
+    const go=async decision=>{
+      card.querySelectorAll("button").forEach(b=>b.disabled=true);
+      const amount=parseFloat(card.querySelector("[data-amt]").value);
+      const {data:r, error} = await sb.rpc("paws_confirm_payment",{p_id:card.dataset.id, p_amount: isFinite(amount)?amount:null, p_decision:decision});
+      if(error){ out.textContent="Could not save: "+error.message; out.className="msg err"; card.querySelectorAll("button").forEach(b=>b.disabled=false); return; }
+      if(r.already){ out.textContent="Already handled ("+r.status+")."; }
+      else if(r.rejected){ out.innerHTML='<span class="pill bad">Marked as not received</span> The booking stays a promise.'; }
+      else { out.innerHTML=`<span class="pill ok">Confirmed ${R(r.amount)}</span> In the ledger. ${r.balance==null?"":r.balance>0?"Balance "+R(r.balance)+".":"Paid in full."} `+
+        (r.receiptLink?`<a class="btn honey" href="${r.receiptLink}" target="_blank" rel="noopener">Send receipt on WhatsApp</a>`:""); }
+      $("claimCount").textContent=Math.max(0,(+$("claimCount").textContent||1)-1);
+      loadBookings(); loadLedger();
+    };
+    card.querySelector("[data-ok]").onclick=()=>go("confirm");
+    card.querySelector("[data-no]").onclick=()=>go("reject");
+  });
+}
+
+/* ---------- bookings ---------- */
+async function loadBookings(){
+  let q = sb.from("paws_bookings").select("ref, booking_type, client_name, phone, dog_names, check_in, check_out, total, paid_to_date, balance, status, daycare_kind").order("check_in",{ascending:true}).limit(300);
+  const f=$("bkFilter").value;
+  if(f==="upcoming"){ const d=new Date(); d.setDate(d.getDate()-3); q=q.gte("check_out", d.toISOString().slice(0,10)); }
+  if(f==="unpaid") q=q.gt("balance",0);
+  const {data, error} = await q;
+  if(error) return msg("Could not load bookings: "+error.message, true);
+  const type={nightly:"Nightly",long:"Long stay",daycare:"Day care",extension:"Extension"};
+  $("bkRows").innerHTML = data.length ? data.map(b=>`<tr><td><b>${esc(b.ref)}</b></td><td>${type[b.booking_type]||b.booking_type}${b.daycare_kind?" ("+b.daycare_kind+")":""}</td>
+    <td>${esc(b.client_name)}<br><span class="muted">${esc(b.phone||"")}</span></td><td class="wrap">${esc(b.dog_names||"")}</td>
+    <td>${esc(b.check_in||"")}</td><td>${esc(b.check_out||"")}</td><td class="num">${R(b.total)}</td><td class="num">${R(b.paid_to_date)}</td>
+    <td class="num">${R(b.balance)}</td><td><span class="pill ${b.balance<=0?"ok":/not received/.test(b.status)?"bad":""}">${esc(b.status)}</span></td></tr>`).join("")
+    : '<tr><td colspan="10" class="muted">No bookings yet.</td></tr>';
+}
+$("bkFilter").onchange=loadBookings;
+
+/* ---------- ledger ---------- */
+let ledgerRows=[];
+async function loadLedger(){
+  let q = sb.from("paws_ledger").select("*").order("entry_date");
+  if($("lgFrom").value) q=q.gte("entry_date",$("lgFrom").value);
+  if($("lgTo").value) q=q.lte("entry_date",$("lgTo").value);
+  if($("lgWhich").value==="new") q=q.is("exported_at",null);
+  const {data, error} = await q;
+  if(error) return msg("Could not load the ledger: "+error.message, true);
+  ledgerRows=data;
+  const total=data.reduce((s,r)=>s+Number(r.money_in||0),0);
+  $("lgSum").textContent = `${data.length} row${data.length===1?"":"s"} · ${R(total)}`;
+  $("lgRows").innerHTML = data.length ? data.map(r=>`<tr><td>${esc(r.entry_date)}</td><td class="wrap">${esc(r.description)}</td><td>${esc(r.category)}</td><td class="num">${R(r.money_in)}</td><td>${r.exported_at?new Date(r.exported_at).toLocaleDateString("en-ZA"):"–"}</td></tr>`).join("")
+    : '<tr><td colspan="5" class="muted">No confirmed payments in this view.</td></tr>';
+}
+["lgFrom","lgTo","lgWhich"].forEach(id=>$(id).onchange=loadLedger);
+// Same column order as the IBMS ledger
+const LEDGER_HEAD=["Date","Dashboard Group - Financial Meaning","Account -Type Income/Expense/Asset/Liability","Description","Transaction Category - Expense Detail",
+  "Paid By: Director Paid, Company Bank,Cash","Money In Bank Debit","Money Out Bank Credit","Running Bank Balance","Transaction Amount","VAT Applicable Y/N",
+  "VAT Received/Vat on Sales/ Output","VAT Paid VAT on Expenses/ Input","Tax Invoice Yes/No","Director Loan Movement","VAT Cycle","Status"];
+const num=v=>v==null||v===""?null:Number(v);
+const ledgerValues=r=>[r.entry_date,r.dashboard_group,r.account_type,r.description,r.category,r.paid_by,
+  num(r.money_in),num(r.money_out),null,num(r.transaction_amount),r.vat_applicable,num(r.vat_output),num(r.vat_input),r.tax_invoice,num(r.director_loan_movement),r.vat_cycle??"",r.status];
+async function markExported(){
+  const ids=ledgerRows.filter(r=>!r.exported_at).map(r=>r.id);
+  if(ids.length){ const {error}=await sb.from("paws_ledger").update({exported_at:new Date().toISOString()}).in("id",ids);
+    if(error) msg("Downloaded, but could not mark rows as exported: "+error.message,true); else msg(`Downloaded ${ledgerRows.length} rows and marked them as exported.`); }
+  else msg(`Downloaded ${ledgerRows.length} rows.`);
+  loadLedger();
+}
+function saveBlob(blob,name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
+$("lgCsv").onclick=async()=>{
+  if(!ledgerRows.length) return msg("There are no rows to download in this view.");
+  const cell=v=>{ v=v==null?"":String(v); return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const lines=[LEDGER_HEAD.map(cell).join(",")].concat(ledgerRows.map(r=>ledgerValues(r).map(cell).join(",")));
+  saveBlob(new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}),`Paws_ledger_${today()}.csv`);
+  markExported();
+};
+// Real Excel workbook: opens the same in Excel and LibreOffice, whatever the computer's comma/semicolon setting
+$("lgXlsx").onclick=async()=>{
+  if(!ledgerRows.length) return msg("There are no rows to download in this view.");
+  if(!window.XLSX) return msg("The Excel tool didn't load. Check the internet connection, or use Download CSV.",true);
+  const rows=ledgerRows.map(r=>{ const v=ledgerValues(r); v[0]=r.entry_date?new Date(r.entry_date+"T00:00:00"):null; return v; });
+  const ws=XLSX.utils.aoa_to_sheet([LEDGER_HEAD,...rows],{cellDates:true,dateNF:"yyyy-mm-dd"});
+  const n=rows.length+1;
+  for(let i=2;i<=n;i++){ ws["A"+i]&&(ws["A"+i].z="yyyy-mm-dd"); ["G","H","J","L","M","O"].forEach(c=>{ if(ws[c+i]&&ws[c+i].t==="n") ws[c+i].z="#,##0.00"; }); }
+  ws["!cols"]=[12,14,10,48,16,16,14,14,14,14,10,12,12,10,12,12,12].map(w=>({wch:w}));
+  ws["!autofilter"]={ref:`A1:Q${n}`};
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Paws_Ledger");
+  const out=XLSX.write(wb,{bookType:"xlsx",type:"array",cellDates:true});
+  saveBlob(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),`Paws_ledger_${today()}.xlsx`);
+  markExported();
+};
+
+/* ---------- business settings ---------- */
+const FIELDS = [
+  ["Business","business_name","Business name","text"],["Business","owner_whatsapp","WhatsApp number clients message (e.g. 27821234567)","text"],["Business","business_email","Email","text"],
+  ["Boarding prices (per night)","small_rate","Small dog","money"],["Boarding prices (per night)","medium_rate","Medium dog","money"],["Boarding prices (per night)","family_discount","2nd & 3rd dog discount (%)","percent"],
+  ["Festive season","festive_from","Starts (MM-DD, e.g. 12-01)","text"],["Festive season","festive_to","Ends (MM-DD, e.g. 01-10)","text"],["Festive season","festive_small_rate","Small dog per night","money"],["Festive season","festive_medium_rate","Medium dog per night","money"],
+  ["Day care prices (per dog per day)","daycare_full_small","Full day – small dog","money"],["Day care prices (per dog per day)","daycare_full_medium","Full day – medium dog","money"],["Day care prices (per dog per day)","daycare_half_small","Half day – small dog","money"],["Day care prices (per dog per day)","daycare_half_medium","Half day – medium dog","money"],
+  ["Hours (leave blank for any time)","checkin_from","Check-in from","time"],["Hours (leave blank for any time)","checkin_to","Check-in until","time"],["Hours (leave blank for any time)","checkout_from","Check-out from","time"],["Hours (leave blank for any time)","checkout_to","Check-out until","time"],["Hours (leave blank for any time)","daycare_open","Day care opens","time"],["Hours (leave blank for any time)","daycare_close","Day care closes","time"],["Hours (leave blank for any time)","halfday_hours","Half day is up to (hours)","money"],
+  ["House rules","house_rules","One rule per line – clients tick each one","textarea"],["House rules","cancellation_policy","Cancellation policy (optional)","textarea"],
+  ["Bank details for EFT","bank_name","Bank","text"],["Bank details for EFT","account_name","Account name","text"],["Bank details for EFT","account_number","Account number","text"],["Bank details for EFT","branch_code","Branch code","text"],["Bank details for EFT","account_type","Account type","text"],["Bank details for EFT","pay_link","Card payment link (optional)","text"],
+  ["Ledger","ledger_category","Category (matches IBMS Setup)","text"],["Ledger","ledger_group","Dashboard group","text"],["Ledger","ledger_paid_by","Paid by","text"]
+];
+const LABEL = Object.fromEntries(FIELDS.map(f=>[f[1],f[2]]));
+async function loadSettings(){
+  const {data, error} = await sb.from("paws_settings").select("key,value");
+  if(error) return msg("Could not load settings: "+error.message, true);
+  const v=Object.fromEntries(data.map(r=>[r.key,r.value]));
+  let html="", group=null;
+  FIELDS.forEach(([g,k,label,type])=>{
+    if(g!==group){ if(group!==null) html+="</div></fieldset>"; group=g; html+=`<fieldset><legend>${esc(g)}</legend><div class="row">`; }
+    let val=v[k]??""; if(type==="percent") val=val===""?"":Math.round(Number(val)*100*100)/100;
+    const attrs = type==="time"?'type="time"':type==="money"||type==="percent"?'type="number" min="0" step="any" inputmode="decimal"':'type="text"';
+    html += type==="textarea" ? `<label style="grid-column:1/-1">${esc(label)}<textarea name="${k}">${esc(val)}</textarea></label>`
+                              : `<label>${esc(label)}<input name="${k}" ${attrs} value="${esc(val)}"></label>`;
+  });
+  html+='</div></fieldset><div class="sticky"><button class="btn primary" type="submit" style="width:100%" id="saveBtn">Save settings</button></div><p class="msg" id="setMsg"></p>';
+  $("setForm").innerHTML=html;
+}
+$("setForm").onsubmit=async e=>{
+  e.preventDefault(); const b=$("saveBtn"); busy(b,true);
+  const p={}; new FormData($("setForm")).forEach((val,k)=>{ p[k]=String(val).trim(); });
+  if("family_discount" in p && p.family_discount!=="") p.family_discount=String(Number(p.family_discount.replace(",","."))/100);
+  const {data:r, error}=await sb.rpc("paws_save_settings",{p});
+  busy(b,false);
+  if(error) return $("setMsg").textContent="Could not save: "+error.message;
+  await loadSettings();
+  $("setMsg").textContent = r.warnings.length ? "Saved, but these were not changed because they don't look right: "+r.warnings.map(k=>LABEL[k]||k).join(", ")+"."
+    : "Saved. The booking app shows the new prices, hours and rules the next time it opens.";
+};
+</script>
+</body>
+</html>

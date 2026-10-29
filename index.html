@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Book in-home boarding for small dogs at Paws Relax Retreat. Nightly and long stays, pickup and drop-off, pay now.">
-<meta name="theme-color" content="#1F4D47">
+<meta name="description" content="Book in-home boarding for small dogs at Paws Relax Retreat. Nightly and long stays, pickup and drop-off, pay by EFT.">
+<meta name="theme-color" content="#5A3216">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Paws Relax">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,21 +20,21 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
 <style>
 :root{
-  --bg:#EEF3EF; --surface:#FFFFFF; --ink:#172321; --muted:#566864; --line:#D3DDD8;
-  --brand:#1F4D47; --brand-ink:#FFFFFF; --honey:#E3A53B; --honey-soft:#FBEFD8; --ok:#2F7A4F; --warn:#9A5B08;
-  --field:#F7FAF8;
+  --bg:#FBF5EA; --surface:#FFFFFF; --ink:#2B1A0E; --muted:#7A5E46; --line:#EADBC4;
+  --brand:#5A3216; --brand-ink:#FFF8EC; --honey:#C8962E; --honey-soft:#F8EBCF; --ok:#2F7A4F; --warn:#8A5A06;
+  --field:#FFFBF4;
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --body:"Nunito Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   color-scheme:dark;
-  --bg:#101917; --surface:#18231F; --ink:#E7EFEB; --muted:#9BB0AA; --line:#2C3B36;
-  --brand:#6FB5A8; --brand-ink:#0E1715; --honey:#EDB85A; --honey-soft:#33291A; --ok:#6CC495; --warn:#E6B15E; --field:#1D2A26;
+  --bg:#1B130D; --surface:#251A12; --ink:#F3E6D3; --muted:#C2A98C; --line:#3C2C1F;
+  --brand:#D9A65A; --brand-ink:#1B130D; --honey:#E2B65E; --honey-soft:#3A2B17; --ok:#6CC495; --warn:#E6B15E; --field:#2C1F15;
 }}
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#101917; --surface:#18231F; --ink:#E7EFEB; --muted:#9BB0AA; --line:#2C3B36;
-  --brand:#6FB5A8; --brand-ink:#0E1715; --honey:#EDB85A; --honey-soft:#33291A; --ok:#6CC495; --warn:#E6B15E; --field:#1D2A26;
+  --bg:#1B130D; --surface:#251A12; --ink:#F3E6D3; --muted:#C2A98C; --line:#3C2C1F;
+  --brand:#D9A65A; --brand-ink:#1B130D; --honey:#E2B65E; --honey-soft:#3A2B17; --ok:#6CC495; --warn:#E6B15E; --field:#2C1F15;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:24px 48px}
@@ -91,17 +91,23 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:v
 .bank{font-size:.85rem;display:grid;grid-template-columns:auto 1fr;gap:2px 12px}
 .bank dt{color:var(--muted)} .bank dd{margin:0;font-weight:600}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.88rem}
+.brand{flex-direction:column;align-items:flex-start;gap:4px}
+.logo{width:min(360px,100%);height:auto;display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+.done{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.done h3{font-family:var(--display);margin:0;font-size:1.15rem}
+.okmark{color:var(--ok);font-weight:700}
+.btn[disabled]{opacity:.55;cursor:progress}
 footer{color:var(--muted);font-size:.8rem;text-align:center}
 </style>
 
 <div class="wrap">
   <header>
     <div class="brand">
-      <div class="paw" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="10" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="14.5" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3.2 0-6.5 4.2-6.5 6.8 0 1.9 1.6 2.7 3.3 2.7 1.3 0 2-.6 3.2-.6s1.9.6 3.2.6c1.7 0 3.3-.8 3.3-2.7C18.5 15.2 15.2 11 12 11z"/></svg></div>
-      <div>
-        <h1>Paws Relax Retreat</h1>
-        <p class="tag">In-home comfort boarding for small dogs · Safe · Secure · Loving care</p>
-      </div>
+      <img class="logo" src="icons/logo.webp" alt="Paws Relax Retreat" width="900" height="468">
+      <h1 class="sr">Paws Relax Retreat</h1>
+      <p class="tag">In-home comfort boarding for small dogs · Safe · Secure · Loving care</p>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><div class="rates" id="rateChips"></div><button type="button" id="installBtn" class="btn honey" hidden style="padding:8px 14px">Install app</button></div>
   </header>
@@ -109,6 +115,7 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-book" aria-selected="true">Book a stay</button>
     <button role="tab" id="tab-extend" aria-selected="false">Extend a stay</button>
+    <button role="tab" id="tab-paid" aria-selected="false">I've paid</button>
   </div>
 
   <!-- BOOK -->
@@ -132,7 +139,13 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
 
       <fieldset>
         <legend>Dates</legend>
-        <label>Type of stay<select id="b-type"><option value="nightly">Nightly stay (per night)</option><option value="long">Long stay (monthly price as agreed)</option></select></label>
+        <label>Type of stay<select id="b-type"><option value="nightly">Nightly stay (per night)</option><option value="long">Long stay (monthly price as agreed)</option><option value="daycare">Day care (no overnight stay)</option></select></label>
+        <div id="dayBox" class="dog" hidden>
+          <label>Full or half day<select id="dc-kind"><option value="full">Full day</option><option value="half">Half day</option></select></label>
+          <div id="dc-days" style="display:flex;flex-direction:column;gap:8px"></div>
+          <button type="button" class="btn ghost" id="dc-add">+ Add another day</button>
+          <p class="muted" id="dc-note"></p>
+        </div>
         <div id="longBox" class="dog" hidden>
           <div class="row">
             <label>Agreed price per month (all dogs), R<input id="l-price" type="number" min="0" step="50" inputmode="numeric" placeholder="e.g. 3200"></label>
@@ -142,13 +155,14 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
           <p class="muted">Fill in the monthly price agreed with Paws Relax Retreat. Extra days are charged pro-rata (monthly price ÷ 30 per day). Each month is paid in advance.</p>
         </div>
         <div class="row">
-          <label>Check-in date<input id="b-in" type="date" required></label>
-          <label>Check-in time<input id="b-intime" type="time" value="09:00"></label>
+          <label id="lab-in"><span id="lab-in-t">Check-in date</span><input id="b-in" type="date" required></label>
+          <label><span id="lab-intime-t">Check-in time</span><input id="b-intime" type="time" value="09:00"></label>
         </div>
         <div class="row">
-          <label>Check-out date<input id="b-out" type="date" required></label>
-          <label>Check-out time<input id="b-outtime" type="time" value="16:00"></label>
+          <label id="lab-out"><span>Check-out date</span><input id="b-out" type="date" required></label>
+          <label><span id="lab-outtime-t">Check-out time</span><input id="b-outtime" type="time" value="16:00"></label>
         </div>
+        <p class="muted" id="hoursNote" hidden></p>
         <p class="note" id="festiveNote" hidden></p>
       </fieldset>
 
@@ -175,11 +189,9 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
       </fieldset>
 
       <fieldset>
-        <legend>Health &amp; agreement</legend>
-        <label class="check"><input type="checkbox" id="c-vacc"> My dog(s) are up to date on Rabies, DHPP and Bordetella vaccinations.</label>
-        <label class="check"><input type="checkbox" id="c-food"> I will provide my dog's food, and I have disclosed all behaviour and medical issues above.</label>
-        <label class="check"><input type="checkbox" id="c-flea"> I authorise flea/tick treatment if fleas are found on arrival (Capstar or vet-approved spot-on). Treatment cost is added to my invoice.</label>
-        <label class="check"><input type="checkbox" id="c-indem"> I accept all risks, authorise veterinary care if needed, and understand Paws Relax Retreat takes all reasonable care but is not liable for illness, injury or escape due to unforeseen events.</label>
+        <legend>House rules &amp; agreement</legend>
+        <div id="rulesBox" style="display:flex;flex-direction:column;gap:14px"></div>
+        <p class="muted" id="cancelTxt" hidden></p>
       </fieldset>
     </form>
 
@@ -193,9 +205,11 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
         <div class="lines" id="b-lines"></div>
         <div class="ref"><span>Booking reference</span><code id="b-ref"></code></div>
         <p class="err" id="b-err" hidden></p>
+        <button type="button" class="btn primary" id="b-send" hidden>Confirm booking</button>
         <a class="btn primary" id="b-wa" target="_blank" rel="noopener">Send booking on WhatsApp</a>
         <button type="button" class="btn ghost" id="b-copy">Copy booking details</button>
         <div class="pay" id="b-pay"></div>
+        <div id="b-done" class="done" hidden></div>
       </div>
     </aside>
   </section>
@@ -206,7 +220,7 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
       <fieldset>
         <legend>Your booking</legend>
         <div class="row">
-          <label>Booking reference<input id="e-ref" placeholder="PRR-…"></label>
+          <label>Booking reference<input id="e-ref" placeholder="PAWS-…"></label>
           <label>Your name<input id="e-name" autocomplete="name"></label>
         </div>
         <div class="row">
@@ -237,8 +251,45 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
       <div class="sum-body">
         <div class="lines" id="e-lines"></div>
         <p class="err" id="e-err" hidden></p>
+        <button type="button" class="btn primary" id="e-send" hidden>Send extension request</button>
         <a class="btn primary" id="e-wa" target="_blank" rel="noopener">Request extension on WhatsApp</a>
+        <div id="e-done" class="done" hidden></div>
         <div class="pay" id="e-pay"></div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- I'VE PAID -->
+  <section id="panel-paid" class="grid" hidden>
+    <form id="paidForm" novalidate>
+      <fieldset>
+        <legend>Let us know you've paid</legend>
+        <p class="muted">Paid by EFT? Tell us here so we can match it in the bank. Your booking is confirmed once the payment reflects.</p>
+        <div class="row">
+          <label>Booking reference<input id="p-ref" placeholder="PAWS-…"></label>
+          <label>Amount paid, R<input id="p-amt" type="number" min="1" step="0.01" inputmode="decimal"></label>
+        </div>
+        <div class="row">
+          <label>Your name<input id="p-name" autocomplete="name"></label>
+          <label>Phone (WhatsApp)<input id="p-phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <div class="row">
+          <label>Date paid<input id="p-date" type="date"></label>
+          <label>Proof of payment (optional)<input id="p-proof" type="file" accept="image/*,application/pdf"></label>
+        </div>
+      </fieldset>
+    </form>
+    <aside aria-live="polite">
+      <div class="sum-head">
+        <small>Payment</small>
+        <div class="total" id="p-total">R0</div>
+        <div id="p-sub" style="font-size:.9rem;opacity:.9"></div>
+      </div>
+      <div class="sum-body">
+        <p class="err" id="p-err" hidden></p>
+        <button type="button" class="btn primary" id="p-send">Send payment notice</button>
+        <a class="btn ghost" id="p-wa" target="_blank" rel="noopener">Or tell us on WhatsApp</a>
+        <div id="p-done" class="done" hidden></div>
       </div>
     </aside>
   </section>
@@ -247,18 +298,33 @@ footer{color:var(--muted);font-size:.8rem;text-align:center}
 </div>
 <div class="toast" id="toast" hidden></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 /* ===== SETTINGS — change these to update prices and payments ===== */
 const SETTINGS = {
   whatsapp: "27790400809",           // 079 040 0809
   phoneDisplay: "079 040 0809",
-  rates:   { small: 130, medium: 150 },      // per night, normal season
+  rates:   { small: 200, medium: 250 },      // per night, normal season
   festive: { from: "12-01", to: "01-10",     // MM-DD, festive season window
-             rates: { small: 130, medium: 150 } }, // raise these when festive prices change
+             rates: { small: 200, medium: 250 } }, // raise these when festive prices change
+  // Hours (24h "HH:MM"; blank = no limit) – set on the back office owner form
+  hours: { checkinFrom:"", checkinTo:"", checkoutFrom:"", checkoutTo:"", daycareOpen:"", daycareClose:"", halfDayHours:5 },
+  // House rules – one tick box per rule. Set on the back office owner form
+  rules: [
+    "My dog(s) are up to date on Rabies, DHPP and Bordetella vaccinations.",
+    "I will provide my dog's food, and I have disclosed all behaviour and medical issues above.",
+    "I authorise flea/tick treatment if fleas are found on arrival (Capstar or vet-approved spot-on). Treatment cost is added to my invoice.",
+    "I accept all risks, authorise veterinary care if needed, and understand Paws Relax Retreat takes all reasonable care but is not liable for illness, injury or escape due to unforeseen events."
+  ],
+  cancellation: "",
+  daycare: { full: { small: 150, medium: 180 },   // per dog per day – change on the back office Settings tab
+             half: { small: 90,  medium: 110 } },
   familyDiscount: 0.10,              // 2nd & 3rd dog from same home
   maxDogs: 3,
+  // Back office: Supabase (InfinityCRM project, paws_* tables). Blank url = WhatsApp only
+  supabase: { url: "https://zyxwadchlypfkwkqprdm.supabase.co", key: "sb_publishable_mwmgwUsAB7cPI4F1T0AyjA_qOsVfe2A" },
   payLink: "",                       // e.g. your Yoco / PayFast / SnapScan link
-  bank: null                         // e.g. {bank:"FNB", name:"Paws Relax Retreat", acc:"...", branch:"250655", type:"Cheque"}
+  bank: {bank:"Capitec Business", name:"Infinity Sparkle Studios", acc:"1052259146", branch:"470010", type:"Business"}
 };
 /* ================================================================== */
 
@@ -306,8 +372,7 @@ function waLink(text){ return `https://wa.me/${SETTINGS.whatsapp}?text=${encodeU
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2200); }
 
 /* ---------- header chips ---------- */
-$("rateChips").innerHTML = `<span class="rate">Small <b>${R(SETTINGS.rates.small)}</b>/night</span><span class="rate">Medium <b>${R(SETTINGS.rates.medium)}</b>/night</span><span class="rate">Long stay <b>monthly</b> as agreed</span><span class="rate">Pickup &amp; drop-off <b>on request</b></span>`;
-$("discTxt").textContent = SETTINGS.familyDiscount*100 + "%";
+renderChips();
 
 /* ---------- dogs ---------- */
 let dogCount=0;
@@ -335,8 +400,37 @@ function addDog(){
 function renumber(){ dogCount=$("dogs").children.length; $("addDog").hidden = dogCount>=SETTINGS.maxDogs; }
 function dogs(){ return [...$("dogs").children].map(el=>{const n=el.dataset.n,g=k=>($(`d${n}-${k}`)||{}).value||""; return {name:g("name").trim(),size:g("size"),breed:g("breed"),age:g("age"),sex:g("sex"),ster:g("ster"),vacc:g("vacc"),med:g("med"),feed:g("feed"),beh:g("beh")};}); }
 
+/* ---------- house rules & hours (from the owner form) ---------- */
+function esc(t){ return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function renderRules(){
+  const box=$("rulesBox"), was=[...box.querySelectorAll("input")].map(x=>x.checked);
+  box.innerHTML=SETTINGS.rules.map((r,i)=>`<label class="check"><input type="checkbox" id="c-r${i}"${was[i]?" checked":""}> ${esc(r)}</label>`).join("");
+  box.querySelectorAll("input").forEach(x=>x.addEventListener("change",updateBook));
+  $("cancelTxt").hidden=!SETTINGS.cancellation; $("cancelTxt").innerHTML=SETTINGS.cancellation?`<b>Cancellation policy:</b> ${esc(SETTINGS.cancellation)}`:"";
+}
+const H=()=>SETTINGS.hours||{};
+function between(t,a,b){ return !t || ((!a||t>=a) && (!b||t<=b)); }
+function rangeTxt(a,b){ return a&&b?`${a}–${b}`:a?`from ${a}`:b?`until ${b}`:""; }
+function hoursNote(){
+  const h=H(), parts=[];
+  if(isDay()){ const r=rangeTxt(h.daycareOpen,h.daycareClose); if(r) parts.push(`Day care hours ${r}`); if($("dc-kind").value==="half"&&h.halfDayHours) parts.push(`half day = up to ${h.halfDayHours} hours`); }
+  else { const a=rangeTxt(h.checkinFrom,h.checkinTo), b=rangeTxt(h.checkoutFrom,h.checkoutTo); if(a) parts.push(`Check-in ${a}`); if(b) parts.push(`Check-out ${b}`); }
+  return parts.join(" · ");
+}
+function hoursMissing(){
+  const h=H(), m=[], tin=$("b-intime").value, tout=$("b-outtime").value;
+  if(isDay()){
+    if(!between(tin,h.daycareOpen,h.daycareClose)||!between(tout,h.daycareOpen,h.daycareClose)) m.push(`times within day care hours (${rangeTxt(h.daycareOpen,h.daycareClose)})`);
+    if($("dc-kind").value==="half"&&h.halfDayHours&&tin&&tout){ const [a,b]=[tin,tout].map(t=>{const[x,y]=t.split(":").map(Number);return x*60+y}); if(b-a>h.halfDayHours*60) m.push(`a half day of ${h.halfDayHours} hours or less (or choose full day)`); }
+  } else {
+    if(!between(tin,h.checkinFrom,h.checkinTo)) m.push(`a check-in time ${rangeTxt(h.checkinFrom,h.checkinTo)}`);
+    if(!between(tout,h.checkoutFrom,h.checkoutTo)) m.push(`a check-out time ${rangeTxt(h.checkoutFrom,h.checkoutTo)}`);
+  }
+  return m;
+}
+
 /* ---------- reference ---------- */
-function makeRef(){ const a=$("b-in").value.replace(/-/g,"").slice(2)||"000000"; const nm=(dogs()[0]?.name||"DOG").replace(/[^A-Za-z]/g,"").slice(0,4).toUpperCase()||"DOG"; return `PRR-${a}-${nm}`; }
+function makeRef(){ const a=$("b-in").value.replace(/-/g,"").slice(2)||"000000"; const nm=(dogs()[0]?.name||"DOG").replace(/[^A-Za-z]/g,"").slice(0,4).toUpperCase()||"DOG"; return `PAWS-${a}-${nm}`; }
 
 /* ---------- booking ---------- */
 /* Pickup & drop-off: quoted per client */
@@ -357,6 +451,42 @@ function withTransport(p){
   return {...p, lines:[...p.lines,...t.lines], total:p.total+t.pick+t.drop, transport:t};
 }
 
+/* Day care: full or half day, one or more single days, price per dog per day */
+function isDay(){ return $("b-type").value==="daycare"; }
+let dcCount=0;
+function addDcDay(val){
+  if($("dc-days").children.length>=20) return;
+  dcCount++; const n=dcCount, row=document.createElement("div"); row.className="row"; row.dataset.n=n;
+  row.innerHTML=`<label>Day<input type="date" id="dc-d${n}"></label>${$("dc-days").children.length?'<button type="button" class="linkbtn" style="align-self:end" data-rm>Remove day</button>':''}`;
+  $("dc-days").appendChild(row);
+  const inp=$("dc-d"+n); if(val) inp.value=val; inp.min=$("b-in").min; inp.addEventListener("input",updateBook);
+  const rm=row.querySelector("[data-rm]"); if(rm) rm.onclick=()=>{ row.remove(); updateBook(); };
+  $("dc-add").hidden=$("dc-days").children.length>=20;
+}
+function dcDays(){ return [...new Set([...$("dc-days").querySelectorAll("input")].map(i=>i.value).filter(Boolean))].sort(); }
+function daycarePrice(){
+  const days=dcDays(), kind=$("dc-kind").value, ds=dogs(); if(!days.length||!ds.length) return null;
+  const rate=SETTINGS.daycare[kind], order=ds.map(d=>d.size).sort((x,y)=>rate[y]-rate[x]);
+  const word=kind==="full"?"full":"half"; const lines=[]; let total=0;
+  order.forEach((sz,i)=>{ const base=days.length*rate[sz];
+    lines.push({label:`Dog ${i+1} · ${sz} · ${days.length} ${word} day${days.length>1?"s":""} × ${R(rate[sz])}`, amt:base}); total+=base;
+    if(i>0){ const d=base*SETTINGS.familyDiscount; lines.push({label:`Family discount ${Math.round(SETTINGS.familyDiscount*100)}%`, amt:-d, disc:true}); total-=d; } });
+  return withTransport({daycare:true, kind, days, lines, total:Math.round(total)});
+}
+function updateDaycare(){
+  const ds=dogs(), p=daycarePrice();
+  renderLines($("b-lines"),p);
+  if(!p) $("b-lines").innerHTML='<p class="muted">Choose your day(s) to see the price.</p>';
+  $("b-total").textContent=R(p?p.total:0);
+  $("b-nights").textContent=p?`Day care · ${p.days.length} ${p.kind} day${p.days.length>1?"s":""} · ${ds.length} dog${ds.length>1?"s":""}`:"Day care";
+  const ref=makeRef()+"-DC"; $("b-ref").textContent=ref;
+  $("festiveNote").hidden=true;
+  const miss=bookMissing(ds,p), err=$("b-err");
+  if(miss.length){ err.hidden=false; err.textContent="Still needed: "+miss.join(", ")+"."; $("b-wa").setAttribute("aria-disabled","true"); $("b-wa").removeAttribute("href"); }
+  else { err.hidden=true; $("b-wa").removeAttribute("aria-disabled"); $("b-wa").href=waLink(bookText(ds,p,ref)); }
+  payBlock($("b-pay"),p?p.total:0,ref);
+}
+
 /* Long stay: agreed monthly price for all dogs, plus pro-rata extra days */
 function isLong(){ return $("b-type").value==="long"; }
 function addMonths(s,n,days){ const d=parse(s); if(!d) return null; const day=d.getUTCDate(); d.setUTCMonth(d.getUTCMonth()+n); if(d.getUTCDate()<day) d.setUTCDate(0); d.setUTCDate(d.getUTCDate()+(days||0)); return d; }
@@ -374,14 +504,20 @@ function longPrice(){
   return {long:true, months:n, extra:e, monthly:M, lines, total:total+t.pick+t.drop, sched, first:sched[0].amt, transport:t};
 }
 function syncType(){
-  const L=isLong(); $("longBox").hidden=!L; $("b-out").readOnly=L;
+  const L=isLong(), D=isDay(); $("longBox").hidden=!L; $("dayBox").hidden=!D; $("b-out").readOnly=L;
+  $("lab-in").hidden=D; $("lab-out").hidden=D;
+  $("lab-intime-t").textContent=D?"Drop-off time":"Check-in time"; $("lab-outtime-t").textContent=D?"Collection time":"Check-out time";
+  if(D){ if(!$("dc-days").children.length) addDcDay($("b-in").value); const days=dcDays(); if(days.length){ $("b-in").value=days[0]; $("b-out").value=days[days.length-1]; }
+    $("dc-note").textContent=`Full day ${R(SETTINGS.daycare.full.small)} (small) / ${R(SETTINGS.daycare.full.medium)} (medium) · Half day ${R(SETTINGS.daycare.half.small)} / ${R(SETTINGS.daycare.half.medium)} per dog per day.`; }
   if(L){ const d=addMonths($("b-in").value,+$("l-months").value,parseInt($("l-extra").value)||0); if(d) $("b-out").value=iso(d); }
 }
 
 function updateBook(){
   syncType();
+  const hn=hoursNote(); $("hoursNote").hidden=!hn; $("hoursNote").textContent=hn?("Our hours: "+hn):"";
   $("b-label").textContent = isLong()? "Total for long stay" : "Amount due";
   if(isLong()) return updateLong();
+  if(isDay()) return updateDaycare();
   const ds=dogs(), p=withTransport(price($("b-in").value,$("b-out").value,ds.map(d=>d.size)));
   renderLines($("b-lines"),p);
   $("b-total").textContent=R(p?p.total:0);
@@ -403,10 +539,11 @@ function bookMissing(ds,p){
   if(!$("b-name").value.trim()) miss.push("your name");
   if(!$("b-phone").value.trim()) miss.push("your phone number");
   if(isLong()&&!(parseFloat($("l-price").value)>0)) miss.push("the agreed monthly price");
-  if(!p) miss.push(isLong()?"a check-in date":"check-in and check-out dates");
+  if(!p) miss.push(isLong()?"a check-in date":isDay()?"at least one day":"check-in and check-out dates");
   if(ds.some(d=>!d.name)) miss.push("each dog's name");
   miss.push(...transport().missing);
-  if(!["c-vacc","c-food","c-flea","c-indem"].every(id=>$(id).checked)) miss.push("the four agreement ticks");
+  miss.push(...hoursMissing());
+  const ticks=[...$("rulesBox").querySelectorAll("input")]; if(ticks.some(x=>!x.checked)) miss.push(ticks.length>1?"all the house-rule ticks":"the house-rule tick");
   return miss;
 }
 function updateLong(){
@@ -423,14 +560,15 @@ function updateLong(){
   const sched = p ? `<div class="lines">${p.sched.map(s=>`<div class="line"><span>${s.label} · due ${fmt(s.due)}</span><span>${R(s.amt)}</span></div>`).join("")}</div>` : "";
   payBlock($("b-pay"),p?p.first:0,ref,"Pay first month",sched);
 }
-function currentBook(){ const ds=dogs(); return {ds, p: isLong()? longPrice() : withTransport(price($("b-in").value,$("b-out").value,ds.map(d=>d.size))), ref: isLong()? makeRef()+"-LS" : makeRef()}; }
+function currentBook(){ const ds=dogs(); return {ds, p: isLong()? longPrice() : isDay()? daycarePrice() : withTransport(price($("b-in").value,$("b-out").value,ds.map(d=>d.size))), ref: makeRef()+(isLong()?"-LS":isDay()?"-DC":"")}; }
 function bookText(ds,p,ref){
   const L=[`🐾 NEW BOOKING – Paws Relax Retreat`,`Ref: ${ref}`,``,
   `Owner: ${$("b-name").value}`,`Phone: ${$("b-phone").value}`];
   if($("b-email").value) L.push(`Email: ${$("b-email").value}`);
   if($("b-address").value) L.push(`Address: ${$("b-address").value}`);
   if($("b-ecname").value||$("b-ecphone").value) L.push(`Emergency: ${$("b-ecname").value} ${$("b-ecphone").value}`);
-  L.push(``,`Check-in: ${fmt($("b-in").value)} ${$("b-intime").value}`,`Check-out: ${fmt($("b-out").value)} ${$("b-outtime").value}`);
+  if(p.daycare) L.push(``,`DAY CARE – ${p.kind==="full"?"Full day":"Half day"}`,`Days: ${p.days.map(fmt).join("; ")}`,`Drop-off ${$("b-intime").value} · Collection ${$("b-outtime").value}`);
+  else L.push(``,`Check-in: ${fmt($("b-in").value)} ${$("b-intime").value}`,`Check-out: ${fmt($("b-out").value)} ${$("b-outtime").value}`);
   const tr=p.transport||{}; if(tr.pick) L.push(`🚗 PICKUP at check-in from: ${tr.pickAddr} (agreed ${R(tr.pick)})`); if(tr.drop) L.push(`🚗 DROP-OFF at check-out to: ${tr.dropAddr} (agreed ${R(tr.drop)})`);
   L.push(``);
   ds.forEach((d,i)=>{ L.push(`Dog ${i+1}: ${d.name} (${d.size}${d.breed?", "+d.breed:""}${d.age?", "+d.age:""}, ${d.sex}, sterilised: ${d.ster})`);
@@ -439,7 +577,7 @@ function bookText(ds,p,ref){
   p.lines.forEach(l=>L.push(`${l.label}: ${l.amt<0?"-":""}${R(Math.abs(l.amt))}`));
   L.push(`TOTAL: ${R(p.total)}`);
   if(p.long){ L.push(``,`Payment schedule (monthly in advance):`); p.sched.forEach(s=>L.push(`  ${s.label} – ${fmt(s.due)}: ${R(s.amt)}`)); L.push(`DUE NOW: ${R(p.first)}`); }
-  L.push(``,`✔ Vaccinations up to date ✔ Food provided by owner ✔ Flea treatment authorised ✔ Indemnity accepted`);
+  L.push(``,`✔ House rules accepted (${SETTINGS.rules.length})`);
   return L.join("\n");
 }
 $("b-copy").onclick=()=>{
@@ -456,7 +594,7 @@ function updateExt(){
   renderLines($("e-lines"),p);
   $("e-total").textContent=R(p?p.total:0);
   $("e-nights").textContent=p?`${p.nights} extra night${p.nights>1?"s":""}`:"";
-  const ref=($("e-ref").value.trim()||"PRR")+"-EXT";
+  const ref=($("e-ref").value.trim()||"PAWS")+"-EXT";
   const miss=[]; if(!$("e-name").value.trim()) miss.push("your name"); if(!$("e-dogs").value.trim()) miss.push("dog name(s)"); if(!p) miss.push("a new check-out date after the current one");
   const err=$("e-err");
   if(miss.length){ err.hidden=false; err.textContent="Still needed: "+miss.join(", ")+"."; $("e-wa").setAttribute("aria-disabled","true"); $("e-wa").removeAttribute("href"); }
@@ -468,14 +606,140 @@ function updateExt(){
   payBlock($("e-pay"),p?p.total:0,ref);
 }
 
+/* ---------- back office (Supabase) ---------- */
+let _sb=null;
+function sb(){ if(_sb) return _sb; const c=SETTINGS.supabase; if(!c||!c.url||!window.supabase) return null;
+  _sb=window.supabase.createClient(c.url,c.key,{auth:{persistSession:false,autoRefreshToken:false}}); return _sb; }
+const API = () => !!sb();
+const RPC = {booking:"paws_submit_booking", extension:"paws_submit_extension", payment:"paws_submit_payment"};
+async function api(action, data){
+  const {data:res, error} = await sb().rpc(RPC[action], {p:data});
+  if(error) throw new Error((error.message||"Could not save").replace(/^.*?:\s*/,"") );
+  return res;
+}
+async function uploadProof(f){
+  const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"jpg";
+  const path=`proofs/${(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2))}.${ext}`;
+  const {error}=await sb().storage.from("paws-proofs").upload(path,f,{contentType:f.type||undefined,upsert:false});
+  if(error) throw new Error("Could not upload the proof of payment ("+error.message+")");
+  return path;
+}
+function busy(btn,on,label){ btn.disabled=on; if(on){btn.dataset.l=btn.textContent; btn.textContent=label||"Sending…";} else if(btn.dataset.l) btn.textContent=btn.dataset.l; }
+function bankHtml(ref){
+  const b=SETTINGS.bank; if(!b) return `<p class="muted">Our bank details are sent with your WhatsApp confirmation.</p>`;
+  return `<dl class="bank"><dt>Bank</dt><dd>${b.bank}</dd><dt>Account name</dt><dd>${b.name}</dd><dt>Account no.</dt><dd>${b.acc}</dd><dt>Branch code</dt><dd>${b.branch}</dd>${b.type?`<dt>Type</dt><dd>${b.type}</dd>`:""}<dt>Reference</dt><dd>${ref}</dd></dl><p class="muted">Please use this reference exactly. It starts with <b>PAWS</b> so we can match your payment.</p>`;
+}
+function goPaid(ref, amount){
+  $("p-ref").value=ref||""; $("p-amt").value=amount||"";
+  if(!$("p-name").value) $("p-name").value=$("b-name").value||$("e-name").value;
+  if(!$("p-phone").value) $("p-phone").value=$("b-phone").value||$("e-phone").value;
+  show("paid"); updatePaid(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function doneBlock(el, title, ref, amount, note){
+  el.hidden=false;
+  el.innerHTML=`<h3>${title}</h3><p class="muted">Reference <b><code>${ref}</code></b>. ${note}</p>
+    <p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} by EFT</p>${bankHtml(ref)}
+    <button type="button" class="btn honey" data-paid>I've paid – let Paws know</button>`;
+  el.querySelector("[data-paid]").onclick=()=>goPaid(ref, amount);
+}
+
+function bookingPayload(){
+  const ds=dogs(), long=isLong(), day=isDay(), t=transport(), lp=long?longPrice():null;
+  return {ref:makeRef()+(long?"-LS":day?"-DC":""), type:long?"long":day?"daycare":"nightly",
+    daycare: day? {kind:$("dc-kind").value, days:dcDays()} : null,
+    rules: SETTINGS.rules,
+    name:$("b-name").value.trim(), phone:$("b-phone").value.trim(), email:$("b-email").value.trim(), address:$("b-address").value.trim(),
+    ecname:$("b-ecname").value.trim(), ecphone:$("b-ecphone").value.trim(),
+    checkIn:$("b-in").value, inTime:$("b-intime").value, checkOut:$("b-out").value, outTime:$("b-outtime").value,
+    dogs:ds, transport:{pick:t.pick, pickAddr:t.pickAddr||"", drop:t.drop, dropAddr:t.dropAddr||""},
+    long: long? {monthly:lp?lp.monthly:0, months:+$("l-months").value, extra:parseInt($("l-extra").value)||0} : null};
+}
+$("b-send").onclick=async()=>{
+  const btn=$("b-send"); busy(btn,true,"Saving your booking…");
+  try{
+    const r=await api("booking", bookingPayload());
+    $("b-ref").textContent=r.ref; $("b-total").textContent=R(r.total);
+    ["b-send","b-wa","b-copy"].forEach(id=>$(id).hidden=true); $("b-pay").hidden=true;
+    doneBlock($("b-done"),"Booking received 🐾", r.ref, r.dueNow,
+      `Your booking is reserved. It's confirmed once your payment reflects in our account.${isLong()?" Each month is paid in advance.":""}`);
+    toast("Booking received");
+  }catch(e){ toast(e.message+". You can send it on WhatsApp instead."); }
+  finally{ busy(btn,false); }
+};
+$("e-send").onclick=async()=>{
+  const btn=$("e-send"); busy(btn,true);
+  try{
+    const r=await api("extension",{ref:$("e-ref").value.trim(), name:$("e-name").value.trim(), phone:$("e-phone").value.trim(), dogs:$("e-dogs").value.trim(),
+      curOut:$("e-cur").value, newOut:$("e-new").value, time:$("e-time").value, small:+$("e-small").value, medium:+$("e-medium").value});
+    ["e-send","e-wa"].forEach(id=>$(id).hidden=true); $("e-pay").hidden=true;
+    doneBlock($("e-done"),"Extension requested", r.ref, r.dueNow, "We'll confirm availability on WhatsApp. Please pay once we've confirmed.");
+  }catch(e){ toast(e.message+". You can send it on WhatsApp instead."); }
+  finally{ busy(btn,false); }
+};
+
+/* ---------- I've paid ---------- */
+function updatePaid(){
+  const amt=parseFloat($("p-amt").value)||0, ref=$("p-ref").value.trim();
+  $("p-total").textContent=R(amt); $("p-sub").textContent=ref?("Reference "+ref):"";
+  const miss=[]; if(!ref) miss.push("your booking reference"); if(!amt) miss.push("the amount paid"); if(!$("p-name").value.trim()) miss.push("your name");
+  const f=$("p-proof").files[0]; if(f && f.size>5*1024*1024) miss.push("a smaller proof file (max 5 MB)");
+  const err=$("p-err"); err.hidden=!miss.length; err.textContent=miss.length?"Still needed: "+miss.join(", ")+".":"";
+  $("p-send").disabled=!!miss.length || !API(); $("p-send").hidden=!API();
+  const txt=[`💰 PAYMENT MADE – Paws Relax Retreat`,`Booking ref: ${ref}`,`Name: ${$("p-name").value}`,`Amount: ${R(amt)}`,`Date paid: ${fmt($("p-date").value)}`,`(Proof of payment attached separately)`].join("\n");
+  const wa=$("p-wa"), basics=ref&&amt&&$("p-name").value.trim();
+  if(!basics){ wa.setAttribute("aria-disabled","true"); wa.removeAttribute("href"); } else { wa.removeAttribute("aria-disabled"); wa.href=waLink(txt); }
+  wa.textContent = API()? "Or tell us on WhatsApp" : "Tell us on WhatsApp";
+  wa.className = "btn "+(API()?"ghost":"primary");
+}
+$("p-send").onclick=async()=>{
+  const btn=$("p-send"); busy(btn,true,"Sending…");
+  try{
+    const f=$("p-proof").files[0];
+    const proofPath=f? await uploadProof(f) : null;
+    const r=await api("payment",{ref:$("p-ref").value.trim(), amount:parseFloat($("p-amt").value), name:$("p-name").value.trim(),
+      phone:$("p-phone").value.trim(), datePaid:$("p-date").value, proofPath});
+    $("p-done").hidden=false; ["p-send","p-wa"].forEach(id=>$(id).hidden=true);
+    $("p-done").innerHTML=`<h3>Thank you!</h3><p class="muted">We've received your payment notice for <b><code>${$("p-ref").value.trim()}</code></b>. Paws Relax Retreat will confirm on WhatsApp once it reflects in our bank.</p>`;
+  }catch(e){ toast(e.message+". Please tell us on WhatsApp instead."); }
+  finally{ busy(btn,false); }
+};
+document.querySelectorAll("#paidForm input").forEach(x=>x.addEventListener("input",updatePaid));
+$("p-proof").addEventListener("change",updatePaid);
+
+/* ---------- live prices & bank details from the back office ---------- */
+function applyRemote(r){
+  if(!r) return;
+  if(r.rates&&r.rates.small) SETTINGS.rates=r.rates;
+  if(r.festive) SETTINGS.festive=r.festive;
+  if(typeof r.familyDiscount==="number") SETTINGS.familyDiscount=r.familyDiscount;
+  if(r.daycare&&r.daycare.full&&r.daycare.full.small) SETTINGS.daycare=r.daycare;
+  if(r.hours) SETTINGS.hours=r.hours;
+  if(Array.isArray(r.rules)&&r.rules.length) SETTINGS.rules=r.rules;
+  if(typeof r.cancellation==="string") SETTINGS.cancellation=r.cancellation;
+  if(r.bank) SETTINGS.bank=r.bank;
+  if(r.payLink) SETTINGS.payLink=r.payLink;
+  if(r.whatsapp) SETTINGS.whatsapp=String(r.whatsapp).replace(/\D/g,"");
+}
+function renderChips(){
+  renderRules();
+  $("rateChips").innerHTML = `<span class="rate">Small <b>${R(SETTINGS.rates.small)}</b>/night</span><span class="rate">Medium <b>${R(SETTINGS.rates.medium)}</b>/night</span><span class="rate">Day care from <b>${R(Math.min(SETTINGS.daycare.half.small,SETTINGS.daycare.half.medium))}</b></span><span class="rate">Long stay <b>monthly</b> as agreed</span><span class="rate">Pickup &amp; drop-off <b>on request</b></span>`;
+  $("discTxt").textContent = Math.round(SETTINGS.familyDiscount*100) + "%";
+}
+async function loadRemote(){
+  if(!API()) return;
+  try{ const c=localStorage.getItem("prr-settings"); if(c){ applyRemote(JSON.parse(c)); renderChips(); updateBook(); updateExt(); } }catch(e){}
+  try{
+    const {data:st, error}=await sb().rpc("paws_public_settings");
+    if(!error&&st){ applyRemote(st); try{localStorage.setItem("prr-settings",JSON.stringify(st));}catch(e){} renderChips(); updateBook(); updateExt(); updatePaid(); }
+  }catch(e){ /* offline: keep built-in prices */ }
+}
+
 /* ---------- tabs ---------- */
 function show(which){
-  const ext = which==="extend";
-  $("tab-book").setAttribute("aria-selected",!ext); $("tab-extend").setAttribute("aria-selected",ext);
-  $("panel-book").hidden=ext; $("panel-extend").hidden=!ext;
+  ["book","extend","paid"].forEach(k=>{ $("tab-"+k).setAttribute("aria-selected",k===which); $("panel-"+k).hidden=k!==which; });
 }
-$("tab-book").onclick=()=>show("book"); $("tab-extend").onclick=()=>show("extend");
-if(location.hash==="#extend") show("extend");
+$("tab-book").onclick=()=>show("book"); $("tab-extend").onclick=()=>show("extend"); $("tab-paid").onclick=()=>show("paid");
+if(location.hash==="#extend") show("extend"); if(location.hash==="#paid") show("paid");
 
 /* ---------- init with sensible example dates ---------- */
 const today=new Date(); const t=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()));
@@ -484,22 +748,29 @@ const mon=new Date(fri); mon.setUTCDate(fri.getUTCDate()+3);
 $("b-in").value=iso(fri); $("b-out").value=iso(mon); $("b-in").min=iso(t); $("b-out").min=iso(t);
 const tue=new Date(mon); tue.setUTCDate(mon.getUTCDate()+2); $("e-cur").value=iso(mon); $("e-new").value=iso(tue);
 $("addDog").onclick=addDog; addDog();
+$("dc-add").onclick=()=>{ addDcDay(); updateBook(); }; $("dc-kind").addEventListener("change",updateBook);
 document.querySelectorAll("#bookForm input,#bookForm select,#bookForm textarea").forEach(x=>x.addEventListener("input",updateBook));
 document.querySelectorAll("#bookForm input[type=checkbox]").forEach(x=>x.addEventListener("change",updateBook));
 document.querySelectorAll("#extForm input,#extForm select").forEach(x=>x.addEventListener("input",updateExt));
 $("b-in").addEventListener("change",()=>{ if($("b-out").value<=$("b-in").value){const d=parse($("b-in").value); d.setUTCDate(d.getUTCDate()+1); $("b-out").value=iso(d);} updateBook(); });
 updateExt();
+$("p-date").value=iso(t);
+(function wireApiButtons(){
+  const on=!!API();
+  $("b-send").hidden=!on; $("e-send").hidden=!on;
+  if(on){ $("b-wa").className="btn ghost"; $("b-wa").textContent="Or send on WhatsApp"; $("e-wa").className="btn ghost"; $("e-wa").textContent="Or ask on WhatsApp"; }
+  const sync=()=>{ $("b-send").disabled=$("b-wa").getAttribute("aria-disabled")==="true"; $("e-send").disabled=$("e-wa").getAttribute("aria-disabled")==="true"; };
+  const ob=new MutationObserver(sync); ob.observe($("b-wa"),{attributes:true}); ob.observe($("e-wa"),{attributes:true}); sync();
+})();
+updatePaid(); loadRemote();
 </script>
 
-
 <script>
-// Offline + install support
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }
 let deferredPrompt=null;
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e; document.getElementById("installBtn").hidden=false; });
 document.getElementById("installBtn").addEventListener("click",async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; document.getElementById("installBtn").hidden=true; });
 window.addEventListener("appinstalled",()=>{ document.getElementById("installBtn").hidden=true; });
 </script>
-
 </body>
 </html>
