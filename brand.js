@@ -20,7 +20,10 @@ window.BRAND = {
     dark:  { bg: "#1B130D", ink: "#F3E6D3", muted: "#C2A98C", line: "#3C2C1F", brand: "#D9A65A", brandInk: "#1B130D", accent: "#E2B65E", accentSoft: "#3A2B17", field: "#2C1F15", surface: "#251A12" }
   },
 
-  // The boarder's back office. Blank url = the app works in WhatsApp-only mode.
+  // The boarder's back office – fill in ONE of these (blank = WhatsApp-only mode):
+  //  google:   the standard plan – the web app URL of the boarder's own Google Sheet back office (https://script.google.com/macros/s/…/exec)
+  //  supabase: the upgrade (and Paws Relax Retreat itself)
+  google: { url: "" },
   supabase: { url: "https://zyxwadchlypfkwkqprdm.supabase.co", key: "sb_publishable_mwmgwUsAB7cPI4F1T0AyjA_qOsVfe2A" },
 
   // Shown until the boarder's own settings have loaded (and when offline)
