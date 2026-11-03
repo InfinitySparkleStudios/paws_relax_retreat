@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Get your own booking and payment app for your dog boarding or day care business. 30 days free.">
+<meta name="theme-color" content="#5A3216">
+<title>Get your own booking app</title>
+<script src="brand.js"></script>
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+:root{ --ok:#2F7A4F; --bad:#B3261E;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Nunito Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+@media (prefers-color-scheme:dark){:root{ --ok:#6CC495; --bad:#F2918A; }}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding:24px 16px 56px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0}
+.lead{margin:0;color:var(--muted);font-size:1rem}
+.offer{background:var(--brand);color:var(--brand-ink);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.offer ul{margin:0;padding-left:20px}
+.offer a{color:inherit;font-weight:700}
+form{display:flex;flex-direction:column;gap:16px}
+fieldset{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:16px;margin:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+legend{font-family:var(--display);font-weight:600;font-size:1.05rem;padding:0 6px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:.86rem;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;font-weight:400;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:9px;padding:10px 11px;width:100%;min-width:0}
+textarea{min-height:80px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+.check{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400;color:var(--ink);font-size:.92rem}
+.check input{width:18px;height:18px;margin-top:3px;flex:none;accent-color:var(--brand)}
+.hint{margin:0;color:var(--muted);font-size:.84rem}
+.btn{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;border:0;cursor:pointer;text-align:center;text-decoration:none;display:block}
+.btn.primary{background:var(--brand);color:var(--brand-ink);font-size:1.05rem}
+.btn.honey{background:var(--honey);color:#1A1405}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn[disabled]{opacity:.55;cursor:progress}
+.err{color:var(--bad);font-size:.9rem;margin:0}
+.done{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.req::after{content:" *";color:var(--bad)}
+footer{color:var(--muted);font-size:.8rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <p class="hint">Infinity Sparkle Studios · Personalized Apps</p>
+    <h1>Your own booking app – 30 days free</h1>
+    <p class="lead">Bookings, day care, extensions and payments for your dog boarding business, in your name, with your prices. This form takes about 5 minutes. You can change everything later.</p>
+  </header>
+
+  <div class="offer">
+    <h2 style="color:inherit">The test offer</h2>
+    <ul>
+      <li><b>30 days free</b> from the day your app goes live.</li>
+      <li>After 30 days: <b>R450 once-off setup</b> plus your plan – <b>Home R229/month</b> or <b>Kennel R429/month</b> (pay yearly and get 2 months free).</li>
+      <li>No limit on the number of dogs. Your clients' details stay in <b>your own Google account</b>.</li>
+      <li>If you decide not to continue, online bookings simply pause. Your data stays yours.</li>
+    </ul>
+    <a href="./?demo=1">← Try the demo app first</a>
+  </div>
+
+  <form id="f" novalidate>
+    <fieldset>
+      <legend>About your business</legend>
+      <div class="row">
+        <label><span class="req">Business name</span><input id="biz" autocomplete="organization"></label>
+        <label><span class="req">Your name</span><input id="name" autocomplete="name"></label>
+      </div>
+      <div class="row">
+        <label><span class="req">WhatsApp number</span><input id="phone" type="tel" autocomplete="tel" placeholder="e.g. 082 123 4567"></label>
+        <label>Email<input id="email" type="email" autocomplete="email"></label>
+      </div>
+      <div class="row">
+        <label>Town / suburb<input id="town" autocomplete="address-level2"></label>
+        <label>Your business is<select id="kind"><option value="Home boarder">Home boarding</option><option value="Kennel / day care">Kennel or day care with staff</option></select></label>
+      </div>
+      <label>Your Google (Gmail) address<input id="gmail" type="email" placeholder="yourname@gmail.com"></label>
+      <p class="hint">Your bookings are stored in a Google Sheet in this account – only you can see them. No Gmail yet? Leave it blank and we'll help.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>What you offer</legend>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="s-night" checked> Nightly boarding</label>
+        <label class="check"><input type="checkbox" id="s-long"> Long stays (monthly)</label>
+        <label class="check"><input type="checkbox" id="s-day"> Day care</label>
+        <label class="check"><input type="checkbox" id="s-trans"> Pickup &amp; drop-off</label>
+      </div>
+      <label>Most dogs you can take at a time<input id="max" type="number" min="1" inputmode="numeric" placeholder="e.g. 10"></label>
+      <p class="hint">This switches on the calendar that shows your clients which days are open or full.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your prices (rand)</legend>
+      <div class="row">
+        <label>Small dog, per night<input id="p-small" type="number" min="0" inputmode="decimal"></label>
+        <label>Medium dog, per night<input id="p-med" type="number" min="0" inputmode="decimal"></label>
+      </div>
+      <div class="row">
+        <label>Day care, full day<input id="p-full" type="number" min="0" inputmode="decimal"></label>
+        <label>Day care, half day<input id="p-half" type="number" min="0" inputmode="decimal"></label>
+      </div>
+      <div class="row">
+        <label>Festive season prices (if different)<input id="p-fest" placeholder="e.g. small R250, medium R300"></label>
+        <label>Discount for a 2nd dog from the same home<input id="p-disc" placeholder="e.g. 10%"></label>
+      </div>
+      <p class="hint">Not sure yet? Leave blank – you can fill in or change prices any time.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Hours &amp; house rules</legend>
+      <div class="row">
+        <label>Check-in times<input id="h-in" placeholder="e.g. 08:00 – 12:00"></label>
+        <label>Check-out times<input id="h-out" placeholder="e.g. 14:00 – 17:00"></label>
+      </div>
+      <label>Day care hours<input id="h-day" placeholder="e.g. 07:00 – 17:30"></label>
+      <label>Your house rules (one per line)<textarea id="rules" placeholder="Leave blank to start with our standard rules: vaccinations, own food, flea treatment, indemnity."></textarea></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your look &amp; payments</legend>
+      <div class="row">
+        <label>Your colours<input id="colours" placeholder="e.g. navy and gold – or 'match my logo'"></label>
+        <label>Booking reference (4–5 letters)<input id="prefix" maxlength="6" placeholder="e.g. SUNNY" style="text-transform:uppercase"></label>
+      </div>
+      <p class="hint">Every booking gets a reference like SUNNY-261212-MAX, so payments are easy to find on your bank statement. Your <b>logo</b>: send it on WhatsApp after this form (we use it for your app icon). Later you can change your name, colours and logo yourself, any time.</p>
+      <div class="row">
+        <label>Card payments<select id="pay"><option>EFT only for now</option><option>Yoco</option><option>SnapScan</option><option>Other / not sure</option></select></label>
+        <label>Plan<select id="plan"><option>Home – R229/month</option><option>Home – R2,290/year</option><option>Kennel – R429/month</option><option>Kennel – R4,290/year</option><option>Not sure yet</option></select></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your ideas</legend>
+      <label>What would make this app most useful for you? (optional)<textarea id="ideas" placeholder="Anything you wish your booking system did – we'd love your suggestions."></textarea></label>
+      <label class="check"><input type="checkbox" id="a-terms"> I understand the first 30 days are free. After that I pay R450 setup and my plan; if I don't, online bookings pause.</label>
+      <label class="check"><input type="checkbox" id="a-popia"> Infinity Sparkle Studios may keep these details to set up my app and contact me about it (POPIA).</label>
+    </fieldset>
+
+    <p class="err" id="err" hidden></p>
+    <button type="submit" class="btn primary" id="send">Send – set up my app</button>
+  </form>
+
+  <div class="done" id="done" hidden></div>
+
+  <footer>Infinity Sparkle Studios · Personalized Apps · <a href="https://wa.me/27790400809" style="color:inherit">WhatsApp 079 040 0809</a></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+/* Sign-ups go to Infinity Sparkle Studios' CRM as a "Personalized App" enquiry */
+const ISS = { url: "https://zyxwadchlypfkwkqprdm.supabase.co", key: "sb_publishable_mwmgwUsAB7cPI4F1T0AyjA_qOsVfe2A", whatsapp: "27790400809" };
+const $ = id => document.getElementById(id);
+const v = id => $(id).value.trim();
+const on = id => $(id).checked;
+
+$("prefix").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ""); });
+
+function brief(){
+  const services=[on("s-night")&&"nightly boarding",on("s-long")&&"long stays",on("s-day")&&"day care",on("s-trans")&&"pickup & drop-off"].filter(Boolean).join(", ")||"(not given)";
+  const L=[
+    "NEW BOARDER – Personalized App (Paws Boarding App) – 30-day free test",
+    "",
+    `Business: ${v("biz")} (${v("kind")})`, `Contact: ${v("name")} · WhatsApp ${v("phone")}${v("email")?" · "+v("email"):""}`,
+    `Town: ${v("town")||"-"}`, `Google account for the back office: ${v("gmail")||"(none yet – help needed)"}`,
+    "", `Services: ${services}`, `Most dogs at a time: ${v("max")||"-"}`,
+    "", "Prices:", `  Small/night: ${v("p-small")||"-"} · Medium/night: ${v("p-med")||"-"}`,
+    `  Day care full: ${v("p-full")||"-"} · half: ${v("p-half")||"-"}`, `  Festive: ${v("p-fest")||"-"} · 2nd dog discount: ${v("p-disc")||"-"}`,
+    "", `Hours: check-in ${v("h-in")||"-"} · check-out ${v("h-out")||"-"} · day care ${v("h-day")||"-"}`,
+    `House rules: ${v("rules")?"\n"+v("rules"):"standard rules"}`,
+    "", `Colours: ${v("colours")||"-"} · Reference prefix: ${v("prefix")||"-"}`, `Card payments: ${v("pay")} · Plan: ${v("plan")}`,
+    "", `Ideas / suggestions: ${v("ideas")||"-"}`,
+    "", "Accepted: 30 days free, then R450 setup + plan; bookings pause if unpaid."
+  ];
+  return L.join("\n");
+}
+function missing(){
+  const m=[];
+  if(!v("biz")) m.push("your business name");
+  if(!v("name")) m.push("your name");
+  if(!v("phone")) m.push("your WhatsApp number");
+  if(v("email") && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("email"))) m.push("a valid email");
+  if(!on("a-terms")) m.push("the 30-day test tick");
+  if(!on("a-popia")) m.push("the POPIA tick");
+  return m;
+}
+$("f").onsubmit = async e => {
+  e.preventDefault();
+  const m=missing(), err=$("err");
+  if(m.length){ err.hidden=false; err.textContent="Still needed: "+m.join(", ")+"."; return; }
+  err.hidden=true; const b=$("send"); b.disabled=true; b.textContent="Sending…";
+  try{
+    if(!window.supabase) throw new Error("offline");
+    const sb=window.supabase.createClient(ISS.url, ISS.key, {auth:{persistSession:false,autoRefreshToken:false}});
+    const parts=v("name").split(/\s+/);
+    const {data, error}=await sb.rpc("submit_enquiry",{
+      p_first_name:parts[0], p_last_name:parts.slice(1).join(" ")||null, p_email:v("email")||v("gmail")||null, p_phone:v("phone"),
+      p_brief:brief(), p_popia_consent:true, p_title:"Personalized App – "+v("biz"), p_order_type:"personalized_app",
+      p_preferred_channel:"whatsapp", p_city:v("town")||null, p_business_name:v("biz"), p_is_trade:true });
+    if(error) throw new Error(error.message);
+    done(data && data.order_no);
+  }catch(x){
+    b.disabled=false; b.textContent="Send – set up my app";
+    err.hidden=false;
+    err.innerHTML=`Could not send the form (${String(x.message||x).replace(/[<>&]/g,"")}). <a href="https://wa.me/${ISS.whatsapp}?text=${encodeURIComponent(brief())}">Send it on WhatsApp instead</a>.`;
+  }
+};
+function done(no){
+  $("f").hidden=true;
+  const msg=`Hi Martha, here is my logo for ${v("biz")}${no?" (sign-up "+no+")":""}.`;
+  $("done").hidden=false;
+  $("done").innerHTML=`<h2>Thank you, ${v("name").split(" ")[0].replace(/[<>&]/g,"")}! 🐾</h2>
+    <p class="lead">We've received your details${no?` (sign-up <b>${String(no).replace(/[<>&]/g,"")}</b>)`:""}. We'll set up your app and WhatsApp you when it's ready to test – usually within a few days.</p>
+    <p class="lead"><b>Last step:</b> send us your logo on WhatsApp (a clear photo or file is fine).</p>
+    <a class="btn honey" href="https://wa.me/${ISS.whatsapp}?text=${encodeURIComponent(msg)}">Send my logo on WhatsApp</a>
+    <a class="btn ghost" href="./?demo=1">Back to the demo</a>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>
