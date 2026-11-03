@@ -70,8 +70,23 @@ window.applyBrandColors = function (brand, accent) {
   s.textContent = `:root{${v(c.light)}}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;${v(c.dark)}}}:root[data-theme="dark"]{color-scheme:dark;${v(c.dark)}}`;
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c.light.brand;
 };
+/* Self-service boarders: their app is this same app opened as …/?b=<their app name>.
+   The phone remembers it, so the installed app (which opens without ?b) stays on their business.
+   …/?b=paws (or no name at all on a fresh phone) is Paws Relax Retreat. */
+window.APP_SLUG = (function () {
+  let b = null; try { b = new URLSearchParams(location.search).get("b"); } catch (e) {}
+  try {
+    if (b !== null) { b = String(b).toLowerCase().replace(/[^a-z0-9]/g, ""); if (!b || b === "paws") { localStorage.removeItem("app-b"); return ""; } localStorage.setItem("app-b", b); return b; }
+    return localStorage.getItem("app-b") || "";
+  } catch (e) { return b || ""; }
+})();
+window.APP_KEY = k => (window.APP_SLUG ? window.APP_SLUG + ":" : "") + k;   // keeps each business's saved data apart on a phone
+if (window.APP_SLUG) {          // a boarder's app: never show Paws' name, logo or bank details
+  Object.assign(window.BRAND, { name: "", shortName: "", tagline: "", description: "", footer: "", logo: null, bank: null, whatsapp: "", phoneDisplay: "", refPrefix: "",
+    ledgerName: "Ledger", supabase: { url: "", key: "" }, google: { url: "" } });
+}
 /* Apply straight away (with the boarder's last saved colours, if any) so the page never flashes the wrong brand */
 (function () {
-  let saved = null; try { saved = JSON.parse(localStorage.getItem("brand-look") || "null"); } catch (e) {}
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(window.APP_KEY("brand-look")) || "null"); } catch (e) {}
   window.applyBrandColors(saved && saved.brand, saved && saved.accent);
 })();

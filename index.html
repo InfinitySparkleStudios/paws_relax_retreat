@@ -132,7 +132,7 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
 <div class="wrap">
   <div class="demo" id="demoBar" hidden>
     <p><b>Demo – try it out.</b> Nothing is booked or paid. Your own app carries your name, logo, prices and bank details.</p>
-    <a class="btn" href="signup.html">Get my own app →</a>
+    <a class="btn" href="setup.html">Get my own app →</a>
   </div>
   <div class="paused" id="paused" hidden></div>
   <header>
@@ -342,7 +342,7 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
   <footer><span data-b="name"></span> · <span data-b="phoneDisplay"></span> · <span data-b="footer"></span></footer>
 </div>
 <div class="toast" id="toast" hidden></div>
-<a class="btn demo-fab" id="demoFab" href="signup.html" hidden>Get my own app →</a>
+<a class="btn demo-fab" id="demoFab" href="setup.html" hidden>Get my own app →</a>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
@@ -357,12 +357,15 @@ function useLook(k){
   if(okLogo(k.logo)) BRAND.logo={src:k.logo};
   if(window.applyBrandColors) window.applyBrandColors(k.brand, k.accent);
 }
-try{ useLook(JSON.parse(localStorage.getItem("brand-look")||"null")); }catch(e){}
+try{ useLook(JSON.parse(localStorage.getItem(APP_KEY("brand-look"))||"null")); }catch(e){}
 function applyBrand(){
   document.title = (BRAND.name||"") + " Bookings";
   const md=document.querySelector('meta[name="description"]'); if(md&&BRAND.description) md.content=BRAND.description;
   const at=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(at&&BRAND.shortName) at.content=BRAND.shortName;
   const lg=document.getElementById("brandLogo");
+  const h1=document.querySelector("h1[data-b='name']");          // no logo yet: show the business name instead
+  if(h1){ h1.classList.toggle("sr", !!BRAND.logo); h1.style.marginBottom="2px"; }
+  if(lg) lg.hidden=!BRAND.logo;
   if(lg && BRAND.logo){ lg.src=BRAND.logo.src; if(BRAND.logo.width){ lg.width=BRAND.logo.width; lg.height=BRAND.logo.height; } else { lg.removeAttribute("width"); lg.removeAttribute("height"); } lg.alt=BRAND.name||""; }
   document.querySelectorAll("[data-b]").forEach(el=>{ el.textContent = BRAND[el.dataset.b] ?? ""; });
   document.querySelectorAll("[data-refph]").forEach(el=>{ el.placeholder = refPrefix()+"-…"; });
@@ -410,13 +413,14 @@ const DEMO = new URLSearchParams(location.search).has("demo");
 if(DEMO){ document.body.classList.add("is-demo"); $("demoBar").hidden=false; $("demoFab").hidden=false;
   SETTINGS.bank={bank:"Your bank",name:"Your business name",acc:"Your account number",branch:"Your branch code",type:""}; }
 /* Subscription: ISS sets activeUntil in brand.js; after that date online bookings pause (the boarder's data stays theirs) */
-const PAUSED = !DEMO && BRAND.activeUntil && new Date().toISOString().slice(0,10) > BRAND.activeUntil;
-if(PAUSED){
-  document.querySelectorAll(".tabs, section.grid").forEach(el=>el.hidden=true);
+function pauseApp(title, text){
+  document.querySelectorAll(".tabs, section.grid, #panel-photos").forEach(el=>el.hidden=true);
   $("paused").hidden=false;
-  $("paused").innerHTML=`<h2 style="margin:0;font-family:var(--display)">Online bookings are paused</h2><p class="muted">Please contact ${esc(BRAND.name||"us")} directly to book.</p>`+
-    (BRAND.whatsapp?`<a class="btn primary" href="https://wa.me/${BRAND.whatsapp}">Message ${esc(BRAND.shortName||BRAND.name||"us")} on WhatsApp</a>`:"");
+  $("paused").innerHTML=`<h2 style="margin:0;font-family:var(--display)">${esc(title)}</h2><p class="muted">${esc(text)}</p>`+
+    (SETTINGS.whatsapp||BRAND.whatsapp?`<a class="btn primary" href="https://wa.me/${SETTINGS.whatsapp||BRAND.whatsapp}">Message ${esc(BRAND.shortName||BRAND.name||"us")} on WhatsApp</a>`:"");
 }
+const PAUSED = !DEMO && BRAND.activeUntil && new Date().toISOString().slice(0,10) > BRAND.activeUntil;
+if(PAUSED) pauseApp("Online bookings are paused", `Please contact ${BRAND.name||"us"} directly to book.`);
 
 function iso(d){return d.toISOString().slice(0,10)}
 function parse(s){ if(!s) return null; const [y,m,d]=s.split("-").map(Number); return new Date(Date.UTC(y,m-1,d)); }
@@ -735,7 +739,7 @@ function updateExt(){
    Two kinds, chosen in brand.js:
    - Google (the standard plan): the boarder's own Google Sheet + Apps Script web app (BRAND.google.url)
    - Supabase (the upgrade, and Paws Relax Retreat): BRAND.supabase */
-const GOOGLE = (BRAND.google && /^https:\/\/script\.google\.com\//.test(BRAND.google.url||"")) ? BRAND.google.url : "";
+let GOOGLE = (BRAND.google && /^https:\/\/script\.google\.com\//.test(BRAND.google.url||"")) ? BRAND.google.url : "";
 let _sb=null;
 function sb(){ if(_sb) return _sb; const c=SETTINGS.supabase; if(GOOGLE||!c||!c.url||!window.supabase) return null;
   _sb=window.supabase.createClient(c.url,c.key,{auth:{persistSession:false,autoRefreshToken:false}}); return _sb; }
@@ -788,7 +792,7 @@ function doneBlock(el, title, ref, amount, note){
   el.innerHTML=`<h3>${title}</h3><p class="muted">Reference <b><code>${ref}</code></b>. ${note}</p>
     ${cardUrl(ref,amount)?`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} ${esc(payWords())}</p>${cardBtn(ref, amount)}<p class="muted">Or pay by EFT:</p>`:`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} by EFT</p>`}${bankHtml(ref)}
     <button type="button" class="btn honey" data-paid>I've paid – let ${esc(BRAND.shortName||"us")} know</button>`;
-  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="signup.html">Get my own app →</a>`);
+  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="setup.html">Get my own app →</a>`);
   el.querySelector("[data-paid]").onclick=()=>goPaid(ref, amount);
   const cb=el.querySelector("[data-card]"); if(cb) cb.addEventListener("click",()=>{ paidMethod="card"; });
 }
@@ -863,12 +867,12 @@ async function remoteLook(r){
   const k={ name:(r.businessName||"").trim(), tagline:r.tagline||"", brand:r.colors&&r.colors.brand, accent:r.colors&&r.colors.accent, logo:"" };
   if(r.logoUrl) k.logo=r.logoUrl;                                   // Supabase: public picture link
   else if(r.logoVersion && GOOGLE){                                 // Google: the logo lives in the boarder's Drive
-    let c=null; try{ c=JSON.parse(localStorage.getItem("brand-logo")||"null"); }catch(e){}
+    let c=null; try{ c=JSON.parse(localStorage.getItem(APP_KEY("brand-logo"))||"null"); }catch(e){}
     if(c && c.v===r.logoVersion) k.logo=c.data;
-    else { try{ const j=await gget({action:"logo"}); if(j.data){ k.logo=j.data; try{ localStorage.setItem("brand-logo",JSON.stringify({v:r.logoVersion,data:j.data})); }catch(e){} } }catch(e){} }
+    else { try{ const j=await gget({action:"logo"}); if(j.data){ k.logo=j.data; try{ localStorage.setItem(APP_KEY("brand-logo"),JSON.stringify({v:r.logoVersion,data:j.data})); }catch(e){} } }catch(e){} }
   }
   if(DEMO) return;                                                  // the demo keeps the sample look
-  useLook(k); try{ localStorage.setItem("brand-look",JSON.stringify(k)); }catch(e){}
+  useLook(k); try{ localStorage.setItem(APP_KEY("brand-look"),JSON.stringify(k)); }catch(e){}
   applyBrand();
 }
 function applyRemote(r){
@@ -895,10 +899,10 @@ function renderChips(){
 }
 async function loadRemote(){
   if(!API()) return;
-  try{ const c=localStorage.getItem("prr-settings"); if(c){ applyRemote(JSON.parse(c)); renderChips(); updateBook(); updateExt(); } }catch(e){}
+  try{ const c=localStorage.getItem(APP_KEY("prr-settings")); if(c){ applyRemote(JSON.parse(c)); renderChips(); updateBook(); updateExt(); } }catch(e){}
   try{
     const st=await getSettings(), error=null;
-    if(!error&&st){ applyRemote(st); applyBrand(); try{localStorage.setItem("prr-settings",JSON.stringify(st));}catch(e){} renderChips(); updateBook(); updateExt(); updatePaid(); }
+    if(!error&&st){ applyRemote(st); applyBrand(); try{localStorage.setItem(APP_KEY("prr-settings"),JSON.stringify(st));}catch(e){} renderChips(); updateBook(); updateExt(); updatePaid(); }
   }catch(e){ /* offline: keep built-in prices */ }
 }
 
@@ -954,11 +958,11 @@ function moveMonth(k){ const [y,m]=calMonth.split("-").map(Number); const d=new 
 $("calPrev").onclick=()=>moveMonth(-1); $("calNext").onclick=()=>moveMonth(1);
 
 /* ---------- daily photos: only for the client's own bookings (each has a secret photo code) ---------- */
-function myStays(){ try{ return JSON.parse(localStorage.getItem("my-stays")||"[]"); }catch(e){ return []; } }
+function myStays(){ try{ return JSON.parse(localStorage.getItem(APP_KEY("my-stays"))||"[]"); }catch(e){ return []; } }
 function rememberStay(st){
   if(!st || !/^[0-9a-f]{24}$/.test(st.token||"") && !/^[A-Za-z0-9_-]{16,64}$/.test(st.token||"")) return;
   const list=myStays().filter(x=>x.token!==st.token); list.unshift(st);
-  try{ localStorage.setItem("my-stays",JSON.stringify(list.slice(0,10))); }catch(e){}
+  try{ localStorage.setItem(APP_KEY("my-stays"),JSON.stringify(list.slice(0,10))); }catch(e){}
 }
 async function getPhotos(token){
   if(GOOGLE) return await gget({action:"photos", token});
@@ -968,18 +972,43 @@ async function getPhotos(token){
 }
 function dayLabel(d){ const t=new Date().toISOString().slice(0,10); const y=new Date(Date.now()-864e5).toISOString().slice(0,10);
   return d===t?"Today":d===y?"Yesterday":fmt(d); }
+function myBookings(){ try{ return JSON.parse(localStorage.getItem(APP_KEY("my-bookings"))||"[]"); }catch(e){ return []; } }
+function myBookingsCard(){
+  const b=myBookings(); if(!b.length) return "";
+  const today=new Date().toISOString().slice(0,10);
+  return `<div class="stay"><h2>My bookings</h2>${b.map(x=>`<div class="line" style="border-top:1px solid var(--line);padding-top:8px"><span><b>${esc(x.dogs||"")}</b> · ${x.checkIn?fmt(x.checkIn):""}${x.checkOut&&x.checkOut!==x.checkIn?" – "+fmt(x.checkOut):""}<br><span class="muted">${esc(x.ref)} · ${esc(x.status||"")}</span></span><span>${x.balance>0?"Due "+R(x.balance):x.checkOut&&x.checkOut<today?"":"Paid"}</span></div>`).join("")}</div>`;
+}
+async function clientLogin(phone, ref){
+  if(GOOGLE) return await api("mystays",{phone, ref});
+  const {data, error}=await sb().rpc("paws_client_login",{p_phone:phone, p_ref:ref}); if(error) throw error; return data;
+}
+function wireLogin(){
+  const f=$("loginForm"); if(!f) return;
+  f.onsubmit=async e=>{ e.preventDefault(); const err=$("li-err"), btn=$("li-go"); err.hidden=true; busy(btn,true,"Checking…");
+    try{
+      const r=await clientLogin($("li-phone").value.trim(), $("li-ref").value.trim());
+      if(!r||!r.ok) throw new Error((r&&r.error)||"We could not find that booking.");
+      (r.stays||[]).slice().reverse().forEach(st=>rememberStay({token:st.token, ref:st.ref}));
+      try{ localStorage.setItem(APP_KEY("my-bookings"),JSON.stringify(r.stays||[])); }catch(x){}
+      busy(btn,false); loadPhotos();
+    }catch(x){ busy(btn,false); err.hidden=false; err.textContent=x.message||String(x); } };
+}
 async function loadPhotos(){
   const box=$("photoStays");
-  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="signup.html">Get my own app →</a></div>`; return; }
+  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="setup.html">Get my own app →</a></div>`; return; }
   const stays=myStays();
-  if(!stays.length){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">Once your dog has checked in, photos of them playing and sleeping appear here every day. Book on this phone, or open the photo link we send you on WhatsApp.</p></div>`; return; }
+  const signin=`<form class="stay" id="loginForm" novalidate><h2>${stays.length?"Another booking?":"Sign in to see your bookings &amp; photos"}</h2>
+    <p class="muted">Use the WhatsApp number you booked with and any of your booking references. No password needed.</p>
+    <div class="row"><label>WhatsApp number<input id="li-phone" type="tel" autocomplete="tel"></label><label>Booking reference<input id="li-ref" data-refph placeholder="${refPrefix()}-…"></label></div>
+    <p class="err" id="li-err" hidden></p><button class="btn primary" id="li-go" type="submit">Show my bookings</button></form>`;
+  if(!stays.length){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">Once your dog has checked in, photos of them playing and sleeping appear here every day.</p></div>`+signin; wireLogin(); return; }
   if(!API()){ box.innerHTML=`<div class="stay"><p class="muted">Photos need an internet connection.</p></div>`; return; }
-  box.innerHTML=stays.map((s,i)=>`<div class="stay" id="st${i}"><p class="muted">Loading photos…</p></div>`).join("");
+  box.innerHTML=myBookingsCard()+stays.map((s,i)=>`<div class="stay" id="st${i}"><p class="muted">Loading photos…</p></div>`).join("")+signin; wireLogin();
   stays.forEach(async (s,i)=>{
     const el=$("st"+i);
     try{
       const d=await getPhotos(s.token);
-      if(!d || !d.ok){ el.remove(); try{ localStorage.setItem("my-stays",JSON.stringify(myStays().filter(x=>x.token!==s.token))); }catch(e){} return; }
+      if(!d || !d.ok){ el.remove(); try{ localStorage.setItem(APP_KEY("my-stays"),JSON.stringify(myStays().filter(x=>x.token!==s.token))); }catch(e){} return; }
       const byDay={}; (d.photos||[]).forEach(p=>(byDay[p.day]=byDay[p.day]||[]).push(p));
       const days=Object.keys(byDay).sort().reverse();
       el.innerHTML=`<h2>${esc(d.dogs||"Your dog")} 🐾</h2>
@@ -1023,14 +1052,36 @@ document.querySelectorAll("#extForm input,#extForm select").forEach(x=>x.addEven
 $("b-in").addEventListener("change",()=>{ if($("b-out").value<=$("b-in").value){const d=parse($("b-in").value); d.setUTCDate(d.getUTCDate()+1); $("b-out").value=iso(d);} updateBook(); });
 updateExt();
 $("p-date").value=iso(t);
-(function wireApiButtons(){
+function wireApiButtons(){
   const on=!!API();
   $("b-send").hidden=!on; $("e-send").hidden=!on;
   if(on){ $("b-wa").className="btn ghost"; $("b-wa").textContent="Or send on WhatsApp"; $("e-wa").className="btn ghost"; $("e-wa").textContent="Or ask on WhatsApp"; }
   const sync=()=>{ $("b-send").disabled=$("b-wa").getAttribute("aria-disabled")==="true"; $("e-send").disabled=$("e-wa").getAttribute("aria-disabled")==="true"; };
   const ob=new MutationObserver(sync); ob.observe($("b-wa"),{attributes:true}); ob.observe($("e-wa"),{attributes:true}); sync();
-})();
-updatePaid(); loadRemote(); loadAvailability();
+}
+
+/* ---------- which business is this? (self-service boarders: …/?b=<their app name>) ---------- */
+const ISS_REG = { url: "https://zyxwadchlypfkwkqprdm.supabase.co", key: "sb_publishable_mwmgwUsAB7cPI4F1T0AyjA_qOsVfe2A" };
+async function lookupBoarder(slug){
+  try{
+    const r=await fetch(ISS_REG.url+"/rest/v1/rpc/app_lookup",{method:"POST",headers:{"Content-Type":"application/json",apikey:ISS_REG.key,Authorization:"Bearer "+ISS_REG.key},body:JSON.stringify({p_slug:slug})});
+    const j=await r.json(); try{ localStorage.setItem(APP_KEY("lookup"),JSON.stringify(j)); }catch(e){} return j;
+  }catch(e){ try{ return JSON.parse(localStorage.getItem(APP_KEY("lookup"))||"null"); }catch(x){ return null; } }   // offline: last known
+}
+async function bootApp(){
+  if(window.APP_SLUG && !DEMO){
+    const L=await lookupBoarder(window.APP_SLUG);
+    if(!L || !L.ok){ pauseApp("App not found", "This booking app link is not active. Please check the link with your boarder."); return; }
+    if(!BRAND.name){ BRAND.name=L.name; BRAND.shortName=L.name; }
+    if(!SETTINGS.refPrefix) BRAND.refPrefix=String(L.name).toUpperCase().replace(/[^A-Z]/g,"").slice(0,5)||"REF";
+    applyBrand();
+    if(L.paused){ pauseApp("Online bookings are paused", `Please contact ${L.name} directly to book.`); return; }
+    if(L.google) GOOGLE=L.google;
+    else { pauseApp("Almost ready", `${L.name}'s booking app is still being set up. Please try again soon.`); return; }
+  }
+  wireApiButtons(); updatePaid(); loadRemote(); loadAvailability();
+}
+bootApp();
 </script>
 
 <script>
