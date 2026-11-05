@@ -70,11 +70,20 @@ window.applyBrandColors = function (brand, accent) {
   s.textContent = `:root{${v(c.light)}}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;${v(c.dark)}}}:root[data-theme="dark"]{color-scheme:dark;${v(c.dark)}}`;
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c.light.brand;
 };
+/* Boarder apps, the demo and the setup page live on the ISS site (Infinity Sparkle Studios · Personalized Apps).
+   This site is only Paws Relax Retreat, so anything for boarders is sent there. */
+window.ISS_APPS = "https://infinitysparklestudios.github.io/apps/boarding/";
+(function () {
+  try {
+    const q = new URLSearchParams(location.search), b = (q.get("b") || "").toLowerCase();
+    if (q.has("demo") || (b && b !== "paws")) location.replace(window.ISS_APPS + location.search);
+  } catch (e) {}
+})();
 /* Self-service boarders: their app is this same app opened as …/?b=<their app name>.
    The phone remembers it, so the installed app (which opens without ?b) stays on their business.
    …/?b=paws (or no name at all on a fresh phone) is Paws Relax Retreat. */
 window.APP_SLUG = (function () {
-  let b = null; try { b = new URLSearchParams(location.search).get("b"); } catch (e) {}
+  let b = null; try { const q = new URLSearchParams(location.search); if (q.has("demo")) return ""; b = q.get("b"); } catch (e) {}   // the demo never opens a remembered business
   try {
     if (b !== null) { b = String(b).toLowerCase().replace(/[^a-z0-9]/g, ""); if (!b || b === "paws") { localStorage.removeItem("app-b"); return ""; } localStorage.setItem("app-b", b); return b; }
     return localStorage.getItem("app-b") || "";
