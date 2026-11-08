@@ -163,14 +163,17 @@ legend{font-weight:700;padding:0 6px}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const BRAND = window.BRAND || {};
 document.title = (BRAND.shortName||"") + " Admin"; document.getElementById("adminTitle").textContent = (BRAND.shortName||"") + " Admin";
 const SUPABASE = BRAND.supabase;
 const LEDGER = BRAND.ledgerName || "Ledger";
-const sb = window.supabase.createClient(SUPABASE.url, SUPABASE.key);
+// No cross-window lock: with the admin open in a browser tab AND as an installed app, Supabase's shared lock
+// could leave one window waiting forever (a blank page).
+if (!window.supabase) { document.getElementById("msg").textContent = "The admin could not load. Check your internet and press Ctrl+Shift+R to refresh."; throw new Error("supabase.js missing"); }
+const sb = window.supabase.createClient(SUPABASE.url, SUPABASE.key, { auth: { lock: async (_name, _timeout, fn) => await fn() } });
 const $ = id => document.getElementById(id);
 const R = n => "R" + Number(n||0).toLocaleString("en-ZA",{maximumFractionDigits:2}).replace(/,/g," ");
 const esc = t => String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -190,6 +193,8 @@ $("signOut").onclick = () => sb.auth.signOut();
 // so the work is started just after it.
 sb.auth.onAuthStateChange((_e, session) => { setTimeout(() => session ? start(session) : showLogin(), 0); });
 (async()=>{ const {data:{session}} = await sb.auth.getSession(); session ? start(session) : showLogin(); })();
+// Never a blank page: if nothing has shown after 6 seconds, offer the sign-in form.
+setTimeout(()=>{ if(!started && $("loginForm").hidden){ showLogin(); $("loginMsg").textContent="Taking long to load – sign in again, or refresh the page."; } },6000);
 function showLogin(){ $("app").hidden=true; $("signOut").hidden=true; $("loginForm").hidden=false; $("who").textContent=""; }
 let started=false;
 async function start(session){
