@@ -79,16 +79,10 @@ window.ISS_APPS = "https://infinitysparklestudios.github.io/apps/boarding/";
     if (q.has("demo") || (b && b !== "paws")) location.replace(window.ISS_APPS + location.search);
   } catch (e) {}
 })();
-/* Self-service boarders: their app is this same app opened as …/?b=<their app name>.
-   The phone remembers it, so the installed app (which opens without ?b) stays on their business.
-   …/?b=paws (or no name at all on a fresh phone) is Paws Relax Retreat. */
-window.APP_SLUG = (function () {
-  let b = null; try { const q = new URLSearchParams(location.search); if (q.has("demo")) return ""; b = q.get("b"); } catch (e) {}   // the demo never opens a remembered business
-  try {
-    if (b !== null) { b = String(b).toLowerCase().replace(/[^a-z0-9]/g, ""); if (!b || b === "paws") { localStorage.removeItem("app-b"); return ""; } localStorage.setItem("app-b", b); return b; }
-    return localStorage.getItem("app-b") || "";
-  } catch (e) { return b || ""; }
-})();
+/* This site is only Paws Relax Retreat. A business name remembered from the time boarder apps lived here
+   is forgotten, so the Paws app and admin always open as Paws. */
+window.APP_SLUG = "";
+try { localStorage.removeItem("app-b"); } catch (e) {}
 window.APP_KEY = k => (window.APP_SLUG ? window.APP_SLUG + ":" : "") + k;   // keeps each business's saved data apart on a phone
 if (window.APP_SLUG) {          // a boarder's app: never show Paws' name, logo or bank details
   Object.assign(window.BRAND, { name: "", shortName: "", tagline: "", description: "", footer: "", logo: null, bank: null, whatsapp: "", phoneDisplay: "", refPrefix: "",
