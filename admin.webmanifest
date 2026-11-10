@@ -4,7 +4,7 @@
   "short_name": "Paws Admin",
   "description": "Paws Relax Retreat back office: payments to check, calendar, bookings, ledger and settings.",
   "start_url": "./admin.html",
-  "scope": "./",
+  "scope": "./admin",
   "display": "standalone",
   "background_color": "#FBF5EA",
   "theme_color": "#5A3216",
