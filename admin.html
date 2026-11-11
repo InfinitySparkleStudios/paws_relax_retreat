@@ -106,6 +106,7 @@ legend{font-weight:700;padding:0 6px}
       <button role="tab" data-tab="payments" aria-selected="true">Payments to check <span class="badge" id="claimCount">0</span></button>
       <button role="tab" data-tab="calendar" aria-selected="false">Calendar</button>
       <button role="tab" data-tab="bookings" aria-selected="false">Bookings</button>
+      <button role="tab" data-tab="long" aria-selected="false">Long stays</button>
       <button role="tab" data-tab="ledger" aria-selected="false">Ledger</button>
       <button role="tab" data-tab="settings" aria-selected="false">Business settings</button>
     </div>
@@ -129,6 +130,36 @@ legend{font-weight:700;padding:0 6px}
         <label>Show<select id="bkFilter"><option value="upcoming">Upcoming &amp; current</option><option value="unpaid">Not fully paid</option><option value="all">All bookings</option></select></label>
       </div>
       <div class="table"><table><thead><tr><th>Ref</th><th>Type</th><th>Client</th><th>Dogs</th><th>In</th><th>Out</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th><th>Status</th><th></th></tr></thead><tbody id="bkRows"></tbody></table></div>
+    </section>
+
+    <section data-panel="long" hidden style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+      <p class="muted">Dogs on a monthly long stay. Each month: create the invoice, send it on WhatsApp, and record the payment when it comes in (or the client taps “I've paid”). Paid invoices go into the ledger like every other payment.</p>
+      <div class="cal-head">
+        <button class="btn ghost" id="lsPrev" aria-label="Previous month">‹</button><b id="lsTitle"></b><button class="btn ghost" id="lsNext" aria-label="Next month">›</button>
+        <span class="muted">Invoices for this month</span>
+      </div>
+      <div id="lsList" style="display:flex;flex-direction:column;gap:12px"></div>
+      <details class="card" id="lsAddBox"><summary style="font-weight:700;cursor:pointer" id="lsFormTitle">+ Add a long stay</summary>
+        <form id="lsForm" style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+          <input type="hidden" name="id">
+          <div class="row">
+            <label>Client's name<input name="name" required maxlength="100" placeholder="e.g. Johan Smith"></label>
+            <label>WhatsApp number<input name="phone" inputmode="tel" maxlength="30" placeholder="e.g. 082 123 4567"></label>
+            <label>Email (optional)<input name="email" type="email" maxlength="120"></label>
+          </div>
+          <div class="row">
+            <label>Dogs' names<input name="dogs" required maxlength="200" placeholder="e.g. Bella, Max"></label>
+            <label>Number of dogs<input name="count" type="number" min="1" max="10" value="1"></label>
+            <label>Monthly amount (R)<input name="monthly" type="number" min="1" step="any" inputmode="decimal" required placeholder="4500"></label>
+          </div>
+          <div class="row">
+            <label>Long stay started<input name="start" type="date"></label>
+            <label>Pays by day of the month<input name="dueDay" type="number" min="1" max="28" value="8"></label>
+            <label>Notes (optional)<input name="notes" maxlength="500"></label>
+          </div>
+          <div class="actions"><button class="btn primary" type="submit" id="lsSave">Save long stay</button><button class="btn ghost" type="button" id="lsCancel">Cancel</button></div>
+        </form>
+      </details>
     </section>
 
     <section data-panel="ledger" hidden style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
@@ -209,7 +240,7 @@ async function start(session){
   clearTimeout(slow); msg("");
   $("app").hidden=false;
   await saveAdminUrl();
-  loadPayments(); loadBookings(); loadLedger(); loadSettings(); loadCalendar();
+  loadPayments(); loadBookings(); loadLedger(); loadSettings(); loadCalendar(); loadLongStays();
 }
 async function saveAdminUrl(){
   const here = location.href.split("#")[0].split("?")[0];
@@ -296,6 +327,100 @@ async function loadBookings(){
   });
 }
 $("bkFilter").onchange=loadBookings;
+
+
+/* ---------- long stays: monthly invoices ---------- */
+let lsMonth=(()=>{ const t=new Date(Date.now()+2*3600e3); t.setUTCDate(1); if(new Date(Date.now()+2*3600e3).getUTCDate()>=15) t.setUTCMonth(t.getUTCMonth()+1); return t.toISOString().slice(0,7); })();
+let lsStays=[], lsInv={}, lsSet={};
+const monthName=m=>new Date(m+"-01T00:00:00Z").toLocaleDateString("en-ZA",{month:"long",year:"numeric",timeZone:"UTC"});
+const longDate=d=>new Date(d+"T00:00:00Z").toLocaleDateString("en-ZA",{weekday:"short",day:"numeric",month:"long",year:"numeric",timeZone:"UTC"});
+const ord=n=>n+((n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
+async function loadLongStays(){
+  const first=lsMonth+"-01";
+  const [a,b,c]=await Promise.all([
+    sb.from("paws_long_stays").select("*").order("client_name"),
+    sb.from("paws_bookings").select("ref,total,paid_to_date,status,long_stay_id,invoice_month").eq("invoice_month",first).not("long_stay_id","is",null),
+    sb.from("paws_settings").select("key,value")]);
+  if(a.error) return $("lsList").innerHTML=`<div class="card"><p class="muted">Long stays aren't switched on yet (${esc(a.error.message)}).</p></div>`;
+  lsStays=a.data||[]; lsInv=Object.fromEntries((b.data||[]).map(r=>[r.long_stay_id,r])); lsSet=Object.fromEntries((c.data||[]).map(r=>[r.key,r.value]));
+  renderLongStays();
+}
+function renderLongStays(){
+  $("lsTitle").textContent=monthName(lsMonth);
+  const end=lsMonth+"-31", shown=lsStays.filter(x=>x.active || (x.end_date && x.end_date>=lsMonth+"-01"));
+  if(!shown.length){ $("lsList").innerHTML=`<div class="card"><p class="muted">No long stays yet. Add one below.</p></div>`; return; }
+  $("lsList").innerHTML=shown.filter(x=>x.start_date<=end).map(x=>{
+    const inv=lsInv[x.id], paid=inv&&Number(inv.paid_to_date)>=Number(inv.total), bal=inv?Number(inv.total)-Number(inv.paid_to_date):0;
+    const due=`${lsMonth}-${String(x.due_day).padStart(2,"0")}`;
+    return `<div class="card" data-ls="${x.id}">
+      <div class="pay"><div><b style="font-size:1.05rem">${esc(x.client_name)}</b>${x.active?"":' <span class="pill bad">stopped</span>'}<br>
+        <span class="muted">${esc(x.dog_names)} (${x.dog_count} dog${x.dog_count>1?"s":""}) · ${R(x.monthly)} a month · pays by the ${ord(x.due_day)}</span></div>
+        <div class="amt">${R(inv?inv.total:x.monthly)}</div></div>
+      ${inv?`<p class="muted"><b><code>${esc(inv.ref)}</code></b> · <span class="pill ${paid?"ok":""}">${paid?"Paid":esc(inv.status)}</span>${!paid&&Number(inv.paid_to_date)>0?` · ${R(bal)} outstanding`:""}</p>`
+           :`<p class="muted">No invoice for ${monthName(lsMonth)} yet · due ${longDate(due)}</p>`}
+      <div class="actions">
+        ${!inv?`<label>Amount (R)<input type="number" min="1" step="any" value="${x.monthly}" data-amt></label><button class="btn primary" data-create>Create invoice &amp; send on WhatsApp</button>`
+              :`<button class="btn ${paid?"ghost":"primary"}" data-send>${paid?"Send again":"Send invoice on WhatsApp"}</button>`}
+        ${inv&&!paid?`<label>Received (R)<input type="number" min="1" step="any" value="${bal}" data-rec></label><label>Date<input type="date" value="${today()}" data-recdate></label><button class="btn honey" data-record>Payment received</button>`:""}
+        <button class="btn ghost" data-edit>Edit</button>
+        <button class="btn ghost" data-toggle>${x.active?"Stop long stay":"Restart"}</button>
+      </div></div>`;}).join("") || `<div class="card"><p class="muted">No long stays running in ${monthName(lsMonth)}.</p></div>`;
+}
+function invoiceText(x, inv){
+  const biz=lsSet.business_name||BRAND.name||"", due=`${lsMonth}-${String(x.due_day).padStart(2,"0")}`, app=new URL("./",location.href).href;
+  const L=[`🐾 INVOICE – ${biz}`,``,`Invoice: ${inv.ref}`,`For: long stay, ${monthName(lsMonth)}`,`Dogs: ${x.dog_names}`,`Amount: ${R(inv.total)}`];
+  const bal=Number(inv.total)-Number(inv.paid_to_date||0); if(Number(inv.paid_to_date)>0) L.push(`Already paid: ${R(inv.paid_to_date)} · Balance: ${R(bal)}`);
+  L.push(`Please pay by: ${longDate(due)}`,``);
+  if(lsSet.account_number) L.push(`EFT: ${[lsSet.bank_name,lsSet.account_name].filter(Boolean).join(" · ")}`,`Account ${lsSet.account_number}${lsSet.branch_code?" · Branch "+lsSet.branch_code:""}`,`Reference: ${inv.ref}`);
+  if(/^https:\/\//.test(lsSet.pay_link||"")) L.push(`Or pay by card: ${lsSet.pay_link}`);
+  L.push(``,`After paying, tap "I've paid" in the app: ${app}`,``,`Thank you! ${biz}`);
+  return L.join("\n");
+}
+$("lsList").addEventListener("click", async e=>{
+  const card=e.target.closest("[data-ls]"); if(!card) return; const x=lsStays.find(s=>s.id===card.dataset.ls); const btn=e.target.closest("button"); if(!btn||!x) return;
+  if(btn.hasAttribute("data-create")||btn.hasAttribute("data-send")){
+    const phone=waNum(x.phone), win=phone?window.open("about:blank","_blank"):null;
+    btn.disabled=true;
+    let inv=lsInv[x.id];
+    if(!inv){ const amt=parseFloat(card.querySelector("[data-amt]").value)||null;
+      const {data,error}=await sb.rpc("paws_long_invoice",{p_id:x.id, p_month:lsMonth+"-01", p_amount:amt});
+      if(error){ btn.disabled=false; if(win) win.close(); return msg("Could not create the invoice: "+error.message,true); }
+      inv={ref:data.ref,total:data.amount,paid_to_date:data.paid||0,status:data.status,long_stay_id:x.id}; lsInv[x.id]=inv; }
+    const link=`https://wa.me/${phone}?text=${encodeURIComponent(invoiceText(x,inv))}`;
+    if(win) win.location.href=link; else { try{ await navigator.clipboard.writeText(invoiceText(x,inv)); }catch(_){} msg(phone?"":"No WhatsApp number for "+x.client_name+" – the invoice text is copied, paste it in WhatsApp."); }
+    btn.disabled=false; renderLongStays(); loadBookings(); loadCalendar(); return;
+  }
+  if(btn.hasAttribute("data-record")){
+    const inv=lsInv[x.id], amt=parseFloat(card.querySelector("[data-rec]").value), d=card.querySelector("[data-recdate]").value;
+    if(!(amt>0)) return msg("Fill in the amount received.",true);
+    if(!confirm(`Record ${R(amt)} received for ${inv.ref}? It goes into the ledger.`)) return;
+    btn.disabled=true;
+    const {data,error}=await sb.rpc("paws_record_payment",{p_ref:inv.ref,p_amount:amt,p_date:d||null,p_method:"eft"});
+    btn.disabled=false; if(error) return msg("Could not record the payment: "+error.message,true);
+    msg(`Recorded ${R(amt)} for ${inv.ref}.`); if(data&&data.receiptLink && confirm("Send "+x.client_name.split(" ")[0]+" a thank-you on WhatsApp?")) window.open(data.receiptLink,"_blank");
+    loadLongStays(); loadBookings(); loadLedger(); return;
+  }
+  if(btn.hasAttribute("data-edit")){
+    const f=$("lsForm"), set=(n,v)=>f.elements.namedItem(n).value=v??"";
+    set("id",x.id); set("name",x.client_name); set("phone",x.phone); set("email",x.email); set("dogs",x.dog_names); set("count",x.dog_count);
+    set("monthly",x.monthly); set("start",x.start_date); set("dueDay",x.due_day); set("notes",x.notes);
+    $("lsFormTitle").textContent="Edit "+x.client_name; $("lsAddBox").open=true; $("lsAddBox").scrollIntoView({behavior:"smooth"}); return;
+  }
+  if(btn.hasAttribute("data-toggle")){
+    if(!confirm(x.active?`Stop ${x.client_name}'s long stay? No more invoices will be created. Past invoices stay.`:`Restart ${x.client_name}'s long stay?`)) return;
+    const {error}=await sb.rpc("paws_save_long_stay",{p:{id:x.id,name:x.client_name,phone:x.phone,email:x.email,dogs:x.dog_names,count:x.dog_count,monthly:x.monthly,start:x.start_date,dueDay:x.due_day,notes:x.notes,active:!x.active}});
+    if(error) return msg(error.message,true); loadLongStays();
+  }
+});
+$("lsForm").onsubmit=async e=>{
+  e.preventDefault(); const f=e.target, p=Object.fromEntries(new FormData(f)); busy($("lsSave"),true);
+  const {error}=await sb.rpc("paws_save_long_stay",{p});
+  busy($("lsSave"),false); if(error) return msg("Could not save: "+error.message,true);
+  msg("Long stay saved."); f.reset(); f.elements.namedItem("id").value=""; $("lsFormTitle").textContent="+ Add a long stay"; $("lsAddBox").open=false; loadLongStays();
+};
+$("lsCancel").onclick=()=>{ $("lsForm").reset(); $("lsForm").elements.namedItem("id").value=""; $("lsFormTitle").textContent="+ Add a long stay"; $("lsAddBox").open=false; };
+const lsGo=k=>{ const [y,m]=lsMonth.split("-").map(Number); lsMonth=new Date(Date.UTC(y,m-1+k,1)).toISOString().slice(0,7); loadLongStays(); };
+$("lsPrev").onclick=()=>lsGo(-1); $("lsNext").onclick=()=>lsGo(1);
 
 /* ---------- calendar: who is here each day ---------- */
 let calMonth=today().slice(0,7), calBookings=[], calCapacity=null, calSel=null;
