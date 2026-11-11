@@ -126,6 +126,37 @@ legend{font-weight:700;padding:0 6px}
     </section>
 
     <section data-panel="bookings" hidden style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+      <details class="card" id="abBox"><summary style="font-weight:700;cursor:pointer">+ Add a booking yourself (e.g. a special price)</summary>
+        <form id="abForm" style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+          <div class="row">
+            <label>Client's name<input name="name" required maxlength="100"></label>
+            <label>WhatsApp number<input name="phone" inputmode="tel" maxlength="30"></label>
+            <label>Email (optional)<input name="email" type="email" maxlength="120"></label>
+          </div>
+          <div class="row">
+            <label>Dog 1<input name="d1" required maxlength="60" placeholder="Name"></label><label>Size<select name="s1"><option value="small">Small</option><option value="medium">Medium</option></select></label>
+            <label>Dog 2 (optional)<input name="d2" maxlength="60" placeholder="Name"></label><label>Size<select name="s2"><option value="small">Small</option><option value="medium">Medium</option></select></label>
+            <label>Dog 3 (optional)<input name="d3" maxlength="60" placeholder="Name"></label><label>Size<select name="s3"><option value="small">Small</option><option value="medium">Medium</option></select></label>
+          </div>
+          <div class="row">
+            <label>Check-in<input name="checkIn" type="date" required></label><label>Time<input name="inTime" type="time"></label>
+            <label>Check-out<input name="checkOut" type="date" required></label><label>Time<input name="outTime" type="time"></label>
+          </div>
+          <p class="muted" id="abNormal">Fill in the dogs and dates to see the normal price.</p>
+          <div class="row">
+            <label>Agreed price (R)<input name="total" type="number" min="1" step="any" required></label>
+            <label>Notes (optional)<input name="notes" maxlength="300" placeholder="e.g. loyal client discount"></label>
+          </div>
+          <fieldset style="border:1px solid var(--line);border-radius:10px;padding:10px"><legend class="muted">Already paid? (optional)</legend>
+            <div class="row">
+              <label>Amount received (R)<input name="paid" type="number" min="0" step="any"></label>
+              <label>Date paid<input name="paidOn" type="date"></label>
+              <label>How<select name="method"><option value="card">Card (Yoco / pay link)</option><option value="eft">EFT</option></select></label>
+            </div>
+          </fieldset>
+          <div class="actions"><button class="btn primary" type="submit" id="abSave">Save booking</button></div>
+        </form>
+      </details>
       <div class="actions">
         <label>Show<select id="bkFilter"><option value="upcoming">Upcoming &amp; current</option><option value="unpaid">Not fully paid</option><option value="all">All bookings</option></select></label>
       </div>
@@ -328,6 +359,48 @@ async function loadBookings(){
 }
 $("bkFilter").onchange=loadBookings;
 
+
+
+/* ---------- add a booking yourself (special price) ---------- */
+let abSet=null;
+async function abSettings(){ if(abSet) return abSet; const {data}=await sb.from("paws_settings").select("key,value"); abSet=Object.fromEntries((data||[]).map(r=>[r.key,r.value])); return abSet; }
+function abDogs(f){ return [1,2,3].map(i=>({name:f.elements.namedItem("d"+i).value.trim(), size:f.elements.namedItem("s"+i).value})).filter(d=>d.name); }
+function abNormal(f,S){
+  const a=f.elements.namedItem("checkIn").value, b=f.elements.namedItem("checkOut").value, dogs=abDogs(f);
+  if(!a||!b||b<=a||!dogs.length) return null;
+  const rate={small:+S.small_rate||0, medium:+S.medium_rate||0}, fr={small:+S.festive_small_rate||rate.small, medium:+S.festive_medium_rate||rate.medium};
+  const from=S.festive_from||"12-01", to=S.festive_to||"01-10", disc=+S.family_discount||0;
+  const fest=md=> from<=to ? (md>=from&&md<=to) : (md>=from||md<=to);
+  let nights=0, fn=0; for(let d=new Date(a+"T00:00:00Z"); d<new Date(b+"T00:00:00Z"); d.setUTCDate(d.getUTCDate()+1)){ nights++; if(fest(d.toISOString().slice(5,10))) fn++; }
+  let total=0; dogs.map(d=>d.size).sort((x,y)=>rate[y]-rate[x]).forEach((sz,i)=>{ const base=(nights-fn)*rate[sz]+fn*fr[sz]; total+= i>0 ? base*(1-disc) : base; });
+  return {nights, total:Math.round(total)};
+}
+$("abForm").addEventListener("input", async e=>{ const f=$("abForm"), n=abNormal(f, await abSettings());
+  $("abNormal").textContent = n ? `${n.nights} night${n.nights>1?"s":""} · normal price ${R(n.total)}` : "Fill in the dogs and dates to see the normal price.";
+  if(n && e.target.name!=="total" && !f.elements.namedItem("total").dataset.touched) f.elements.namedItem("total").value=n.total;
+  if(e.target.name==="total") e.target.dataset.touched="1"; });
+$("abForm").onsubmit=async e=>{
+  e.preventDefault(); const f=e.target, v=n=>f.elements.namedItem(n).value, n=abNormal(f, await abSettings());
+  busy($("abSave"),true);
+  const {data,error}=await sb.rpc("paws_add_booking",{p:{name:v("name"),phone:v("phone"),email:v("email"),dogs:abDogs(f),checkIn:v("checkIn"),inTime:v("inTime"),
+    checkOut:v("checkOut"),outTime:v("outTime"),total:v("total"),normal:n?n.total:"",notes:v("notes")}});
+  if(error){ busy($("abSave"),false); return msg("Could not save the booking: "+error.message,true); }
+  let note=`Booking ${data.ref} saved (${R(data.total)}).`;
+  const paid=parseFloat(v("paid"));
+  if(paid>0){ const r=await sb.rpc("paws_record_payment",{p_ref:data.ref,p_amount:paid,p_date:v("paidOn")||null,p_method:v("method")});
+    note += r.error ? " The payment could not be recorded: "+r.error.message : ` Payment of ${R(paid)} recorded and in the ledger.`; }
+  busy($("abSave"),false); msg(note, false);
+  const ph=String(v("phone")).replace(/\D/g,"").replace(/^0/,"27");
+  if(ph.length>=10 && confirm("Send "+v("name").split(" ")[0]+" her booking reference on WhatsApp?")){
+    const S=await abSettings(), app=new URL("./",location.href).href;
+    const t=[`🐾 ${S.business_name||"Paws Relax Retreat"} – booking confirmed`,``,`Reference: ${data.ref}`,`Dogs: ${abDogs(f).map(d=>d.name).join(", ")}`,
+      `Check-in: ${v("checkIn")}${v("inTime")?" "+v("inTime"):""}`,`Check-out: ${v("checkOut")}${v("outTime")?" "+v("outTime"):""}`,`Total: ${R(data.total)}`+(paid>=data.total?" – paid, thank you!":""),
+      ``,`See daily photos during the stay in our app: ${app}`,`(📷 Photos → sign in with your WhatsApp number and this reference)`].join("\n");
+    window.open(`https://wa.me/${ph}?text=${encodeURIComponent(t)}`,"_blank");
+  }
+  f.reset(); delete f.elements.namedItem("total").dataset.touched; $("abNormal").textContent="Fill in the dogs and dates to see the normal price."; $("abBox").open=false;
+  loadBookings(); loadCalendar(); loadLedger(); loadPayments();
+};
 
 /* ---------- long stays: monthly invoices ---------- */
 let lsMonth=(()=>{ const t=new Date(Date.now()+2*3600e3); t.setUTCDate(1); if(new Date(Date.now()+2*3600e3).getUTCDate()>=15) t.setUTCMonth(t.getUTCMonth()+1); return t.toISOString().slice(0,7); })();
