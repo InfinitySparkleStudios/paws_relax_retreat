@@ -1,6 +1,6 @@
-// Paws Relax Retreat – offline support. Bump VERSION whenever you change index.html.
-const VERSION = "prr-v27";
-const SHELL = ["./", "./index.html", "./brand.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png", "./icons/logo.webp", "./supabase.js"];
+// ISS Boarding App – offline support. Bump VERSION whenever you change index.html.
+const VERSION = "iss-boarding-v12";
+const SHELL = ["./", "./index.html", "./brand.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener("fetch", e => {
