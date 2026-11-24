@@ -88,7 +88,7 @@ legend{font-weight:700;padding:0 6px}
 <div class="wrap">
   <header>
     <div class="brand"><img src="icons/icon-192.png" alt=""><div><h1 id="adminTitle">Admin</h1><p class="muted" id="who"></p></div></div>
-    <button class="btn ghost" id="signOut" hidden>Sign out</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn honey" id="installBtn" type="button" hidden>📲 Install app</button><button class="btn ghost" id="signOut" hidden>Sign out</button></div>
   </header>
 
   <!-- sign in -->
@@ -723,5 +723,32 @@ $("setForm").onsubmit=async e=>{
 };
 </script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
+<script>
+/* "Install app": puts Paws Relax Admin on the phone's home screen / PC taskbar. Hidden once it's installed. */
+let deferredPrompt=null;
+const isInstalled=()=>matchMedia("(display-mode: standalone)").matches || navigator.standalone===true;
+function installHelp(){
+  const ua=navigator.userAgent, ios=/iPhone|iPad|iPod/i.test(ua), android=/Android/i.test(ua);
+  const steps = ios
+    ? "<li>Open this page in <b>Safari</b>.</li><li>Tap <b>Share</b> (the square with the arrow).</li><li>Tap <b>Add to Home Screen</b> → <b>Add</b>.</li>"
+    : android
+    ? "<li>Open this page in <b>Chrome</b>.</li><li>Tap <b>⋮</b> (top right).</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b> → <b>Install</b>.</li>"
+    : "<li>In Chrome or Edge, click the <b>install icon</b> at the right of the address bar,</li><li>or <b>⋮</b> → <b>Cast, save and share → Install page as app</b> (Edge: <b>⋯ → Apps → Install this site as an app</b>).</li>";
+  let box=document.getElementById("installHelp");
+  if(!box){ box=document.createElement("div"); box.id="installHelp"; box.className="overlay";
+    box.addEventListener("click",e=>{ if(e.target===box||e.target.dataset.close!==undefined) box.remove(); }); document.body.appendChild(box); }
+  box.innerHTML=`<div class="card" role="dialog" aria-modal="true"><h2 style="margin:0">📲 Install Paws Relax Admin</h2>
+    <p class="muted">Then it opens from its own icon – check payments, see bookings and add bookings wherever you are.</p>
+    <ol style="margin:0;padding-left:20px;line-height:1.7">${steps}</ol><button type="button" class="btn primary" data-close>OK</button></div>`;
+}
+function showInstall(){ document.getElementById("installBtn").hidden=isInstalled(); }
+showInstall();
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e; showInstall(); });
+document.getElementById("installBtn").addEventListener("click",async()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; return; }
+  installHelp();
+});
+window.addEventListener("appinstalled",()=>{ document.getElementById("installBtn").hidden=true; const h=document.getElementById("installHelp"); if(h) h.remove(); });
+</script>
 </body>
 </html>
