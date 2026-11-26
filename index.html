@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>Bookings</title>
+<title>Booking App</title>
 <script src="brand.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
 </head>
@@ -132,7 +132,7 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
 <div class="wrap">
   <div class="demo" id="demoBar" hidden>
     <p><b>Demo – try it out.</b> Nothing is booked or paid. Your own app carries your name, logo, prices and bank details.</p>
-    <a class="btn" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a>
+    <a class="btn" href="setup.html">Get my own app →</a>
   </div>
   <div class="paused" id="paused" hidden></div>
   <header>
@@ -207,16 +207,33 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
 
       <fieldset>
         <legend>Pickup &amp; drop-off service</legend>
-        <p class="muted">We can collect your dog(s) and bring them home. The fee is quoted per client, so fill in the amount agreed with <span data-b="name"></span>.</p>
+        <p class="muted" id="t-intro">We can collect your dog(s) and bring them home. The fee is quoted per client, so fill in the amount agreed with <span data-b="name"></span>.</p>
+        <div class="rates" id="t-zoneChips" hidden></div>
         <label class="check"><input type="checkbox" id="t-pick"> Please collect my dog(s) at check-in</label>
-        <div class="row" id="t-pickBox" hidden>
-          <label>Agreed pickup fee, R<input id="t-pickFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
-          <label>Pickup address<input id="t-pickAddr" placeholder="Same as home address"></label>
+        <div id="t-pickBox" hidden style="display:flex;flex-direction:column;gap:10px">
+          <div class="row">
+            <label class="t-zoneL" hidden>Pickup area<select id="t-pickZone"></select></label>
+            <label class="t-feeL">Agreed pickup fee, R<input id="t-pickFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
+            <label>Pickup address<input id="t-pickAddr" placeholder="Same as home address"></label>
+          </div>
+          <div class="row" style="align-items:end">
+            <label>Location pin (optional)<input id="t-pickPin" placeholder="Google Maps link, or tap the button"></label>
+            <button type="button" class="btn ghost" onclick="usePin('pick')">📍 Use my current location</button>
+          </div>
+          <p class="muted" id="t-pickPinMsg" hidden></p>
         </div>
         <label class="check"><input type="checkbox" id="t-drop"> Please bring my dog(s) home at check-out</label>
-        <div class="row" id="t-dropBox" hidden>
-          <label>Agreed drop-off fee, R<input id="t-dropFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
-          <label>Drop-off address<input id="t-dropAddr" placeholder="Same as home address"></label>
+        <div id="t-dropBox" hidden style="display:flex;flex-direction:column;gap:10px">
+          <div class="row">
+            <label class="t-zoneL" hidden>Drop-off area<select id="t-dropZone"></select></label>
+            <label class="t-feeL">Agreed drop-off fee, R<input id="t-dropFee" type="number" min="0" step="10" inputmode="numeric" placeholder="e.g. 120"></label>
+            <label>Drop-off address<input id="t-dropAddr" placeholder="Same as pickup / home address"></label>
+          </div>
+          <div class="row" style="align-items:end">
+            <label>Location pin (optional)<input id="t-dropPin" placeholder="Same as pickup pin"></label>
+            <button type="button" class="btn ghost" onclick="usePin('drop')">📍 Use my current location</button>
+          </div>
+          <p class="muted" id="t-dropPinMsg" hidden></p>
         </div>
       </fieldset>
 
@@ -342,9 +359,9 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
   <footer><span data-b="name"></span> · <span data-b="phoneDisplay"></span> · <span data-b="footer"></span></footer>
 </div>
 <div class="toast" id="toast" hidden></div>
-<a class="btn demo-fab" id="demoFab" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html" hidden>Get my own app →</a>
+<a class="btn demo-fab" id="demoFab" href="setup.html" hidden>Get my own app →</a>
 
-<script src="supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 /* ===== Branding comes from brand.js (one file per boarder) ===== */
 const BRAND = window.BRAND || {};
@@ -390,6 +407,7 @@ const SETTINGS = {
     `I accept all risks, authorise veterinary care if needed, and understand ${BRAND.name||"the boarder"} takes all reasonable care but is not liable for illness, injury or escape due to unforeseen events.`
   ],
   cancellation: "",
+  transport: null,                   // pickup & drop-off fee per trip by area – from Settings
   daycare: { full: { small: 150, medium: 180 },   // per dog per day – change on the back office Settings tab
              half: { small: 90,  medium: 110 } },
   familyDiscount: 0.10,              // 2nd & 3rd dog from same home
@@ -409,7 +427,7 @@ const $ = id => document.getElementById(id);
 const R = n => "R" + Math.round(n).toLocaleString("en-ZA").replace(/,/g," ");
 const SIZE = {small:"Small (under 10 kg)", medium:"Medium (10–25 kg)"};
 /* Demo (…/?demo=1): a test drive for boarders – nothing is saved, no real payment details */
-const DEMO = new URLSearchParams(location.search).has("demo");
+const DEMO = new URLSearchParams(location.search).has("demo") || (BRAND.hub && !window.APP_SLUG);   // the ISS site without ?b is the demo
 if(DEMO){ document.body.classList.add("is-demo"); $("demoBar").hidden=false; $("demoFab").hidden=false;
   SETTINGS.bank={bank:"Your bank",name:"Your business name",acc:"Your account number",branch:"Your branch code",type:""}; }
 /* Subscription: ISS sets activeUntil in brand.js; after that date online bookings pause (the boarder's data stays theirs) */
@@ -515,6 +533,9 @@ function addDog(){
   <label>Age<input id="d${n}-age" placeholder="e.g. 4 years"></label></div>
   <div class="row"><label>Sex<select id="d${n}-sex"><option>Female</option><option>Male</option></select></label>
   <label>Sterilised<select id="d${n}-ster"><option>Yes</option><option>No</option></select></label></div>
+  <div class="row"><label>Good with other dogs?<select id="d${n}-social"><option value="">Choose…</option><option>Yes – plays well with other dogs</option><option>Sometimes – needs time to settle</option><option>No – must be kept apart</option><option>Not sure</option></select></label>
+  <label>Flea &amp; tick prevention<select id="d${n}-flea"><option value="">Choose…</option><option>Yes – up to date</option><option>No / not up to date</option></select></label></div>
+  <label>Flea &amp; tick product and date given (optional)<input id="d${n}-fleanote" placeholder="e.g. Bravecto, 1 Nov 2026"></label>
   <label>Last vaccination date<input id="d${n}-vacc" type="date"></label>
   <label>Medical conditions / allergies<textarea id="d${n}-med"></textarea></label>
   <label>Feeding instructions<textarea id="d${n}-feed"></textarea></label>
@@ -526,7 +547,7 @@ function addDog(){
   updateBook();
 }
 function renumber(){ dogCount=$("dogs").children.length; $("addDog").hidden = dogCount>=SETTINGS.maxDogs; }
-function dogs(){ return [...$("dogs").children].map(el=>{const n=el.dataset.n,g=k=>($(`d${n}-${k}`)||{}).value||""; return {name:g("name").trim(),size:g("size"),breed:g("breed"),age:g("age"),sex:g("sex"),ster:g("ster"),vacc:g("vacc"),med:g("med"),feed:g("feed"),beh:g("beh")};}); }
+function dogs(){ return [...$("dogs").children].map(el=>{const n=el.dataset.n,g=k=>($(`d${n}-${k}`)||{}).value||""; return {name:g("name").trim(),size:g("size"),breed:g("breed"),age:g("age"),sex:g("sex"),ster:g("ster"),social:g("social"),flea:[g("flea"),g("fleanote").trim()].filter(Boolean).join(" – "),vacc:g("vacc"),med:g("med"),feed:g("feed"),beh:g("beh")};}); }
 
 /* ---------- house rules & hours (from the owner form) ---------- */
 function esc(t){ return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
@@ -561,17 +582,46 @@ function hoursMissing(){
 function makeRef(){ const a=$("b-in").value.replace(/-/g,"").slice(2)||"000000"; const nm=(dogs()[0]?.name||"DOG").replace(/[^A-Za-z]/g,"").slice(0,4).toUpperCase()||"DOG"; return `${refPrefix()}-${a}-${nm}`; }
 
 /* ---------- booking ---------- */
-/* Pickup & drop-off: quoted per client */
+/* Pickup & drop-off: a fixed fee per trip by area (set in Settings), or quoted per client when no area fees are set */
+function zones(){ const z=SETTINGS.transport||{}; return ["near","far"].map(k=>({k, area:(z[k]&&z[k].area)||"", fee:Math.round(Number(z[k]&&z[k].fee)||0)})).filter(x=>x.fee>0&&x.area); }
+function setupZones(){
+  const Z=zones(), on=Z.length>0;
+  document.querySelectorAll(".t-zoneL").forEach(x=>x.hidden=!on); document.querySelectorAll(".t-feeL").forEach(x=>x.hidden=on);
+  $("t-intro").innerHTML = on ? `We can collect your dog(s) and bring them home. The fee is <b>per trip</b> – pickup is one trip and drop-off is another. Further away than this? Please WhatsApp <span data-b="name">${esc(SETTINGS.businessName||BRAND.name||"us")}</span> for a quote first.`
+    : `We can collect your dog(s) and bring them home. The fee is quoted per client, so fill in the amount agreed with <span data-b="name">${esc(SETTINGS.businessName||BRAND.name||"us")}</span>.`;
+  const ch=$("t-zoneChips"); ch.hidden=!on; ch.innerHTML=Z.map(z=>`<span class="rate">${esc(z.area)} <b>${R(z.fee)}</b>/trip</span>`).join("");
+  ["pick","drop"].forEach(w=>{ const sel=$("t-"+w+"Zone"), v=sel.value;
+    sel.innerHTML=`<option value="">Choose your area…</option>`+Z.map(z=>`<option value="${z.k}">${esc(z.area)} – ${R(z.fee)}</option>`).join("");
+    if(Z.some(z=>z.k===v)) sel.value=v; });
+}
+function pinUrl(v){ v=(v||"").trim(); if(!v) return "";
+  const m=v.match(/^(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)$/); if(m) return `https://maps.google.com/?q=${m[1]},${m[2]}`;
+  return /^https:\/\/\S+$/i.test(v) ? v.slice(0,120) : ""; }
+function usePin(w){
+  const msg=$("t-"+w+"PinMsg"); msg.hidden=false;
+  if(!navigator.geolocation){ msg.textContent="This phone can't share its location here – please paste a Google Maps link instead."; return; }
+  msg.textContent="Finding your location… (allow location if your phone asks)";
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const u=`https://maps.google.com/?q=${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+    $("t-"+w+"Pin").value=u; msg.innerHTML=`📍 Pin added – <a href="${u}" target="_blank" rel="noopener">check it on the map</a>. Only use this if you're at the ${w==="pick"?"pickup":"drop-off"} address right now.`; updateBook();
+  }, err=>{ msg.textContent = err.code===1 ? "Location was not allowed. You can paste a Google Maps link instead (in Google Maps: tap your spot → Share → Copy link)." : "Could not find your location – please paste a Google Maps link instead."; },
+  {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
 function transport(){
-  const t={lines:[],pick:0,drop:0,missing:[]};
+  const t={lines:[],pick:0,drop:0,missing:[]}, Z=zones(), home=$("b-address").value.trim();
   $("t-pickBox").hidden=!$("t-pick").checked; $("t-dropBox").hidden=!$("t-drop").checked;
-  const home=$("b-address").value.trim();
-  if($("t-pick").checked){ t.pick=Math.round(parseFloat($("t-pickFee").value)||0); t.pickAddr=$("t-pickAddr").value.trim()||home;
-    if(!t.pick) t.missing.push("the agreed pickup fee"); if(!t.pickAddr) t.missing.push("the pickup address");
-    t.lines.push({label:"Pickup service", amt:t.pick}); }
-  if($("t-drop").checked){ t.drop=Math.round(parseFloat($("t-dropFee").value)||0); t.dropAddr=$("t-dropAddr").value.trim()||home;
-    if(!t.drop) t.missing.push("the agreed drop-off fee"); if(!t.dropAddr) t.missing.push("the drop-off address");
-    t.lines.push({label:"Drop-off service", amt:t.drop}); }
+  const pickPin=pinUrl($("t-pickPin").value), dropPin=pinUrl($("t-dropPin").value)||(!$("t-dropAddr").value.trim()?pickPin:"");
+  const trip=(w,label,addr,pin)=>{
+    let fee, area="";
+    if(Z.length){ const z=Z.find(z=>z.k===$("t-"+w+"Zone").value); fee=z?z.fee:0; area=z?z.area:""; if(!z) t.missing.push(`the ${label.toLowerCase()} area`); }
+    else { fee=Math.round(parseFloat($("t-"+w+"Fee").value)||0); if(!fee) t.missing.push(`the agreed ${label.toLowerCase()} fee`); }
+    if(!addr) t.missing.push(`the ${label.toLowerCase()} address`);
+    if($("t-"+w+"Pin").value.trim() && !pinUrl($("t-"+w+"Pin").value)) t.missing.push(`a working ${label.toLowerCase()} pin link (or leave it blank)`);
+    t[w]=fee; t[w+"Addr"]=[addr, pin?"📍 "+pin:""].filter(Boolean).join(" · ").slice(0,290); t[w+"Area"]=area; t[w+"Pin"]=pin;
+    t.lines.push({label:`${label} service${area?" – "+area:""}`, amt:fee});
+  };
+  if($("t-pick").checked) trip("pick","Pickup", $("t-pickAddr").value.trim()||home, pickPin);
+  if($("t-drop").checked) trip("drop","Drop-off", $("t-dropAddr").value.trim()||($("t-pick").checked&&$("t-pickAddr").value.trim())||home, dropPin);
   return t;
 }
 function withTransport(p){
@@ -698,9 +748,10 @@ function bookText(ds,p,ref){
   if($("b-ecname").value||$("b-ecphone").value) L.push(`Emergency: ${$("b-ecname").value} ${$("b-ecphone").value}`);
   if(p.daycare) L.push(``,`DAY CARE – ${p.kind==="full"?"Full day":"Half day"}`,`Days: ${p.days.map(fmt).join("; ")}`,`Drop-off ${$("b-intime").value} · Collection ${$("b-outtime").value}`);
   else L.push(``,`Check-in: ${fmt($("b-in").value)} ${$("b-intime").value}`,`Check-out: ${fmt($("b-out").value)} ${$("b-outtime").value}`);
-  const tr=p.transport||{}; if(tr.pick) L.push(`🚗 PICKUP at check-in from: ${tr.pickAddr} (agreed ${R(tr.pick)})`); if(tr.drop) L.push(`🚗 DROP-OFF at check-out to: ${tr.dropAddr} (agreed ${R(tr.drop)})`);
+  const tr=p.transport||{}; if(tr.pick) L.push(`🚗 PICKUP at check-in from: ${tr.pickAddr} (${tr.pickArea?tr.pickArea+", ":"agreed "}${R(tr.pick)})`); if(tr.drop) L.push(`🚗 DROP-OFF at check-out to: ${tr.dropAddr} (${tr.dropArea?tr.dropArea+", ":"agreed "}${R(tr.drop)})`);
   L.push(``);
   ds.forEach((d,i)=>{ L.push(`Dog ${i+1}: ${d.name} (${d.size}${d.breed?", "+d.breed:""}${d.age?", "+d.age:""}, ${d.sex}, sterilised: ${d.ster})`);
+    if(d.social) L.push(`  With other dogs: ${d.social}`); if(d.flea) L.push(`  Flea & tick: ${d.flea}`);
     if(d.vacc) L.push(`  Last vaccination: ${fmt(d.vacc)}`); if(d.med) L.push(`  Medical: ${d.med}`); if(d.feed) L.push(`  Feeding: ${d.feed}`); if(d.beh) L.push(`  Behaviour: ${d.beh}`); });
   L.push(``); if(p.long) L.push(`STAY TYPE: Long stay – agreed ${R(p.monthly)} per month (all dogs)`);
   p.lines.forEach(l=>L.push(`${l.label}: ${l.amt<0?"-":""}${R(Math.abs(l.amt))}`));
@@ -792,7 +843,7 @@ function doneBlock(el, title, ref, amount, note){
   el.innerHTML=`<h3>${title}</h3><p class="muted">Reference <b><code>${ref}</code></b>. ${note}</p>
     ${cardUrl(ref,amount)?`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} ${esc(payWords())}</p>${cardBtn(ref, amount)}<p class="muted">Or pay by EFT:</p>`:`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} by EFT</p>`}${bankHtml(ref)}
     <button type="button" class="btn honey" data-paid>I've paid – let ${esc(BRAND.shortName||"us")} know</button>`;
-  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a>`);
+  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="setup.html">Get my own app →</a>`);
   if(!DEMO && !(matchMedia("(display-mode: standalone)").matches || navigator.standalone===true))
     el.insertAdjacentHTML("beforeend",`<p class="note"><b>📲 Keep this app on your phone</b> to check your booking, pay and see your dog's daily photos.</p><button type="button" class="btn ghost" data-install>Install app</button>`);
   const ib=el.querySelector("[data-install]"); if(ib) ib.onclick=()=>document.getElementById("installBtn").click();
@@ -894,10 +945,12 @@ function applyRemote(r){
   if(typeof r.refPrefix==="string" && r.refPrefix) SETTINGS.refPrefix=r.refPrefix;
   if("maxDogs" in r) SETTINGS.capacity=r.maxDogs||null;
   if(r.whatsapp) SETTINGS.whatsapp=String(r.whatsapp).replace(/\D/g,"");
+  if(r.transport) SETTINGS.transport=r.transport;
 }
 function renderChips(){
   renderRules();
-  $("rateChips").innerHTML = `<span class="rate">Small <b>${R(SETTINGS.rates.small)}</b>/night</span><span class="rate">Medium <b>${R(SETTINGS.rates.medium)}</b>/night</span><span class="rate">Day care from <b>${R(Math.min(SETTINGS.daycare.half.small,SETTINGS.daycare.half.medium))}</b></span><span class="rate">Long stay <b>monthly</b> as agreed</span><span class="rate">Pickup &amp; drop-off <b>on request</b></span>`;
+  $("rateChips").innerHTML = `<span class="rate">Small <b>${R(SETTINGS.rates.small)}</b>/night</span><span class="rate">Medium <b>${R(SETTINGS.rates.medium)}</b>/night</span><span class="rate">Day care from <b>${R(Math.min(SETTINGS.daycare.half.small,SETTINGS.daycare.half.medium))}</b></span><span class="rate">Long stay <b>monthly</b> as agreed</span><span class="rate">Pickup &amp; drop-off <b>${zones().length?"from "+R(Math.min(...zones().map(z=>z.fee)))+"/trip":"on request"}</b></span>`;
+  setupZones();
   $("discTxt").textContent = Math.round(SETTINGS.familyDiscount*100) + "%";
 }
 async function loadRemote(){
@@ -998,7 +1051,7 @@ function wireLogin(){
 }
 async function loadPhotos(){
   const box=$("photoStays");
-  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a></div>`; return; }
+  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="setup.html">Get my own app →</a></div>`; return; }
   const stays=myStays();
   const signin=`<form class="stay" id="loginForm" novalidate><h2>${stays.length?"Another booking?":"Sign in to see your bookings &amp; photos"}</h2>
     <p class="muted">Use the WhatsApp number you booked with and any of your booking references. No password needed.</p>
@@ -1090,7 +1143,8 @@ async function lookupBoarder(slug){
 async function bootApp(){
   if(window.APP_SLUG && !DEMO){
     const L=await lookupBoarder(window.APP_SLUG);
-    if(!L || !L.ok){ pauseApp("App not found", "This booking app link is not active. Please check the link with your boarder."); return; }
+    if(!L || !L.ok){ try{ localStorage.removeItem("app-b"); }catch(e){}   // don't stay stuck on a business that no longer exists
+      pauseApp("App not found", "This booking app link is not active. Please check the link with your boarder – or scan their QR code again."); return; }
     if(!BRAND.name){ BRAND.name=L.name; BRAND.shortName=L.name; }
     if(!SETTINGS.refPrefix) BRAND.refPrefix=String(L.name).toUpperCase().replace(/[^A-Z]/g,"").slice(0,5)||"REF";
     applyBrand();

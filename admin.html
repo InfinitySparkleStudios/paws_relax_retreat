@@ -212,6 +212,12 @@ legend{font-weight:700;padding:0 6px}
   </main>
   <p class="msg" id="msg"></p>
 </div>
+<div class="overlay" id="detBox" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="detTitle">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><div><h2 id="detTitle">Booking</h2><p class="muted" id="detSub"></p></div><button class="btn ghost" id="detClose">Close</button></div>
+    <div id="detBody" style="display:flex;flex-direction:column;gap:12px"></div>
+  </div>
+</div>
 <div class="overlay" id="photoBox" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="phTitle">
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><div><h2 id="phTitle"></h2><p class="muted" id="phSub"></p></div><button class="btn ghost" id="phClose">Close</button></div>
@@ -346,9 +352,10 @@ async function loadBookings(){
     <td>${esc(b.client_name)}<br><span class="muted">${esc(b.phone||"")}</span></td><td class="wrap">${esc(b.dog_names||"")}</td>
     <td>${esc(b.check_in||"")}</td><td>${esc(b.check_out||"")}</td><td class="num">${R(b.total)}</td><td class="num">${R(b.paid_to_date)}</td>
     <td class="num">${R(b.balance)}</td><td><span class="pill ${/cancel|declin/i.test(b.status)?"bad":b.balance<=0?"ok":/not received/.test(b.status)?"bad":""}">${esc(b.status)}</span></td>
-    <td><button class="btn honey" data-photos="${b.id}" style="padding:6px 10px">📷 Photos</button> ${/cancel|declin/i.test(b.status)?"":`<button class="btn ghost" data-cancel="${b.id}" data-ref="${esc(b.ref)}" data-kind="${b.booking_type==="extension"&&/requested/.test(b.status)?"declined":"cancelled"}" style="padding:6px 10px">${b.booking_type==="extension"&&/requested/.test(b.status)?"Decline":"Cancel"}</button>`}</td></tr>`).join("")
+    <td><button class="btn primary" data-details="${b.id}" style="padding:6px 10px">🐶 Details</button> <button class="btn honey" data-photos="${b.id}" style="padding:6px 10px">📷 Photos</button> ${/cancel|declin/i.test(b.status)?"":`<button class="btn ghost" data-cancel="${b.id}" data-ref="${esc(b.ref)}" data-kind="${b.booking_type==="extension"&&/requested/.test(b.status)?"declined":"cancelled"}" style="padding:6px 10px">${b.booking_type==="extension"&&/requested/.test(b.status)?"Decline":"Cancel"}</button>`}</td></tr>`).join("")
     : '<tr><td colspan="11" class="muted">No bookings yet.</td></tr>';
   $("bkRows").querySelectorAll("[data-photos]").forEach(x=>x.onclick=()=>openPhotos(data.find(b=>b.id===x.dataset.photos)));
+  $("bkRows").querySelectorAll("[data-details]").forEach(x=>x.onclick=()=>openDetails(x.dataset.details));
   document.querySelectorAll("[data-cancel]").forEach(btn=>btn.onclick=async()=>{
     if(btn.dataset.sure!=="1"){ btn.dataset.sure="1"; btn.textContent="Tap again to confirm"; return; }
     btn.disabled=true;
@@ -535,8 +542,9 @@ function showDay(d){
     ${list.length? `<div class="table"><table><thead><tr><th>Ref</th><th>Dogs</th><th>Client</th><th>Stay</th><th>Status</th></tr></thead><tbody>${list.map(b=>`<tr>
       <td><b>${esc(b.ref)}</b></td><td class="wrap">${esc(b.dog_names||"")}</td><td>${esc(b.client_name)}<br><span class="muted">${esc(b.phone||"")}</span></td>
       <td>${type[b.booking_type]||b.booking_type}${b.daycare_kind?" ("+b.daycare_kind+")":""}<br><span class="muted">${b.booking_type==="daycare"?"":esc(b.check_in)+" → "+esc(b.check_out)}${b.check_in===d&&b.booking_type!=="daycare"?" · arrives":""}</span></td>
-      <td><span class="pill">${esc(b.status)}</span><br><button class="btn honey" data-photos="${b.id}" style="padding:6px 10px;margin-top:6px">📷 Photos</button></td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No dogs booked.</p>'}`;
+      <td><span class="pill">${esc(b.status)}</span><br><button class="btn primary" data-details="${b.id}" style="padding:6px 10px;margin-top:6px">🐶 Details</button> <button class="btn honey" data-photos="${b.id}" style="padding:6px 10px;margin-top:6px">📷 Photos</button></td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No dogs booked.</p>'}`;
   $("calDay").querySelectorAll("[data-photos]").forEach(x=>x.onclick=()=>openPhotos(list.find(b=>b.id===x.dataset.photos)));
+  $("calDay").querySelectorAll("[data-details]").forEach(x=>x.onclick=()=>openDetails(x.dataset.details));
   document.querySelectorAll(".cal-day.on").forEach(x=>x.classList.remove("on"));
   const el=document.querySelector(`.cal-day[data-d="${d}"]`); if(el) el.classList.add("on");
 }
@@ -564,6 +572,61 @@ async function uploadLogo(){
     m.textContent="Uploaded. Click “Save settings” to show it in your app.";
   }catch(e){ m.textContent="Could not upload the logo: "+(e.message||e); }
 }
+
+
+/* ---------- booking details: everything the client filled in, with the things to watch flagged ---------- */
+function ageNote(a){
+  const t=String(a||"").toLowerCase(); if(!t) return "";
+  const n=parseFloat(t.replace(",", ".")); if(!isFinite(n)) return "";
+  if(/month|maand|week/.test(t) || n<1) return "puppy";
+  if(n>=8) return "senior";
+  return "";
+}
+function vaccOld(v){ if(!v) return false; const d=new Date(v+"T00:00:00"); return isFinite(d) && (Date.now()-d)>365*864e5; }
+const fmtD=d=>d?new Date(d+"T00:00:00Z").toLocaleDateString("en-ZA",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}):"";
+async function openDetails(id){
+  const {data:b,error}=await sb.from("paws_bookings").select("*").eq("id",id).single();
+  if(error) return msg("Could not open the booking: "+error.message,true);
+  const type={nightly:"Nightly stay",long:"Long stay",daycare:"Day care",extension:"Extension"};
+  $("detTitle").textContent=`${b.ref} · ${b.dog_names||""}`;
+  $("detSub").textContent=`${type[b.booking_type]||b.booking_type} · ${b.status}`;
+  const row=(k,v)=>v?`<tr><th style="width:38%;white-space:normal">${esc(k)}</th><td class="wrap">${esc(v)}</td></tr>`:"";
+  /* pickup / drop-off: address, a map button (the client's pin, or a map search of the address) and the fee */
+  const trow=(k,a,fee)=>{ a=String(a||""); const pin=(a.match(/https:\/\/\S+/)||[""])[0], addr=a.replace(/\s*·?\s*📍\s*https:\/\/\S+/,"").trim();
+    const map=pin||(addr?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(addr):"");
+    return `<tr><th style="width:38%;white-space:normal">${esc(k)}</th><td class="wrap">${esc(addr||"(no address)")} · <b>${R(fee)}</b>${map?`<br><a class="btn ghost" style="margin-top:6px;padding:6px 10px;display:inline-block" href="${esc(map)}" target="_blank" rel="noopener">📍 ${pin?"Open pin in Maps":"Find address in Maps"}</a>`:""}</td></tr>`; };
+  const flag=(t,bad)=>` <span class="pill ${bad?"bad":""}">${esc(t)}</span>`;
+  const dogs=(b.dogs||[]).map((d,i)=>{
+    const flags=[], age=ageNote(d.age);
+    if(age) flags.push(flag(age==="puppy"?"Puppy":"Senior",false));
+    if(/^no/i.test(d.sterilised||"")) flags.push(flag("Not sterilised",true));
+    if(/^no/i.test(d.socialised||"")) flags.push(flag("Keep apart from other dogs",true)); else if(/^sometimes/i.test(d.socialised||"")) flags.push(flag("Needs time with other dogs",false));
+    if(/^no/i.test(d.flea||"")) flags.push(flag("No flea & tick prevention",true));
+    if(!d.last_vaccination) flags.push(flag("No vaccination date",true)); else if(vaccOld(d.last_vaccination)) flags.push(flag("Vaccination over 1 year ago",true));
+    if(d.medical && !/^(none|no|n\/a|nil|-)$/i.test(d.medical.trim())) flags.push(flag("Medical / allergies",true));
+    return `<div class="card" style="gap:6px"><h2 style="font-size:1.05rem">Dog ${i+1}: ${esc(d.name||"")}</h2>
+      ${flags.length?`<div>${flags.join("")}</div>`:""}
+      <div class="table"><table><tbody>
+        ${row("Size",d.size)}${row("Breed",d.breed)}${row("Age",d.age)}${row("Sex",d.sex)}${row("Sterilised",d.sterilised)}
+        ${row("Good with other dogs",d.socialised||"(not asked when this booking was made)")}${row("Flea & tick prevention",d.flea||"(not asked when this booking was made)")}
+        ${row("Last vaccination",d.last_vaccination?fmtD(d.last_vaccination):"")}${row("Medical / allergies / special treatment",d.medical)}${row("Feeding",d.feeding)}${row("Behaviour",d.behaviour)}
+      </tbody></table></div></div>`;}).join("") || '<p class="muted">No dog details on this booking (added by hand).</p>';
+  const stay = b.booking_type==="daycare" ? `${(b.daycare_days||[]).map(fmtD).join(", ")} (${b.daycare_kind||""} day)` :
+    `${fmtD(b.check_in)}${b.check_in_time?" "+b.check_in_time:""} → ${fmtD(b.check_out)}${b.check_out_time?" "+b.check_out_time:""}`;
+  const ph=waNum(b.phone);
+  $("detBody").innerHTML=`${dogs}
+    <div class="card" style="gap:6px"><h2 style="font-size:1.05rem">Owner &amp; stay</h2><div class="table"><table><tbody>
+      ${row("Owner",b.client_name)}${row("WhatsApp / phone",b.phone)}${row("Email",b.email)}${row("Address",b.address)}${row("Emergency contact",b.emergency_contact)}
+      ${row("Stay",stay)}${row("Period",b.period)}
+      ${b.pickup_fee>0?trow("🚗 Pickup (check-in)",b.pickup_address,b.pickup_fee):""}${b.dropoff_fee>0?trow("🚗 Drop-off (check-out)",b.dropoff_address,b.dropoff_fee):""}
+      ${row("Total",R(b.total))}${row("Paid",R(b.paid_to_date))}${row("Balance",R(b.balance))}
+      ${row("House rules accepted",Array.isArray(b.rules_accepted)&&b.rules_accepted.length?b.rules_accepted.length+" rules ticked":"")}${row("Notes",b.notes)}
+    </tbody></table></div>
+    ${ph?`<a class="btn honey" href="https://wa.me/${ph}" target="_blank" rel="noopener" style="width:fit-content">💬 WhatsApp ${esc(String(b.client_name||"").split(" ")[0])}</a>`:""}</div>`;
+  $("detBox").hidden=false;
+}
+$("detClose").onclick=()=>{ $("detBox").hidden=true; };
+$("detBox").addEventListener("click",e=>{ if(e.target.id==="detBox") $("detBox").hidden=true; });
 
 /* ---------- daily photos for pet parents ---------- */
 let phBooking=null;
@@ -680,6 +743,7 @@ const FIELDS = [
   ["Boarding prices (per night)","small_rate","Small dog","money"],["Boarding prices (per night)","medium_rate","Medium dog","money"],["Boarding prices (per night)","family_discount","2nd & 3rd dog discount (%)","percent"],
   ["Festive season","festive_from","Starts (MM-DD, e.g. 12-01)","text"],["Festive season","festive_to","Ends (MM-DD, e.g. 01-10)","text"],["Festive season","festive_small_rate","Small dog per night","money"],["Festive season","festive_medium_rate","Medium dog per night","money"],
   ["Day care prices (per dog per day)","daycare_full_small","Full day – small dog","money"],["Day care prices (per dog per day)","daycare_full_medium","Full day – medium dog","money"],["Day care prices (per dog per day)","daycare_half_small","Half day – small dog","money"],["Day care prices (per dog per day)","daycare_half_medium","Half day – medium dog","money"],
+  ["Pickup & drop-off (fee per trip)","trip_near_area","Nearby area name","text"],["Pickup & drop-off (fee per trip)","trip_near_fee","Nearby – fee per trip","money"],["Pickup & drop-off (fee per trip)","trip_far_area","Further area name","text"],["Pickup & drop-off (fee per trip)","trip_far_fee","Further – fee per trip (0 = not offered)","money"],
   ["Hours (leave blank for any time)","checkin_from","Check-in from","time"],["Hours (leave blank for any time)","checkin_to","Check-in until","time"],["Hours (leave blank for any time)","checkout_from","Check-out from","time"],["Hours (leave blank for any time)","checkout_to","Check-out until","time"],["Hours (leave blank for any time)","daycare_open","Day care opens","time"],["Hours (leave blank for any time)","daycare_close","Day care closes","time"],["Hours (leave blank for any time)","halfday_hours","Half day is up to (hours)","money"],
   ["House rules","house_rules","One rule per line – clients tick each one","textarea"],["House rules","cancellation_policy","Cancellation policy (optional)","textarea"],
   ["Bank details for EFT","bank_name","Bank","text"],["Bank details for EFT","account_name","Account name","text"],["Bank details for EFT","account_number","Account number","text"],["Bank details for EFT","branch_code","Branch code","text"],["Bank details for EFT","account_type","Account type","text"],["Online payments (optional)","pay_link","Your payment link – Yoco Payment Page (https://pay.yoco.com/…), SnapScan (https://pos.snapscan.io/qr/…) or any https link","text"],["Online payments (optional)","pay_label","Button wording, e.g. by card (blank = automatic)","text"],
