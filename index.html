@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>Booking App</title>
+<title>Bookings</title>
 <script src="brand.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
 </head>
@@ -132,7 +132,7 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
 <div class="wrap">
   <div class="demo" id="demoBar" hidden>
     <p><b>Demo – try it out.</b> Nothing is booked or paid. Your own app carries your name, logo, prices and bank details.</p>
-    <a class="btn" href="setup.html">Get my own app →</a>
+    <a class="btn" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a>
   </div>
   <div class="paused" id="paused" hidden></div>
   <header>
@@ -359,9 +359,9 @@ body.is-demo #b-wa,body.is-demo #e-wa,body.is-demo #p-wa,body.is-demo #b-copy{di
   <footer><span data-b="name"></span> · <span data-b="phoneDisplay"></span> · <span data-b="footer"></span></footer>
 </div>
 <div class="toast" id="toast" hidden></div>
-<a class="btn demo-fab" id="demoFab" href="setup.html" hidden>Get my own app →</a>
+<a class="btn demo-fab" id="demoFab" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html" hidden>Get my own app →</a>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script>
 /* ===== Branding comes from brand.js (one file per boarder) ===== */
 const BRAND = window.BRAND || {};
@@ -427,7 +427,7 @@ const $ = id => document.getElementById(id);
 const R = n => "R" + Math.round(n).toLocaleString("en-ZA").replace(/,/g," ");
 const SIZE = {small:"Small (under 10 kg)", medium:"Medium (10–25 kg)"};
 /* Demo (…/?demo=1): a test drive for boarders – nothing is saved, no real payment details */
-const DEMO = new URLSearchParams(location.search).has("demo") || (BRAND.hub && !window.APP_SLUG);   // the ISS site without ?b is the demo
+const DEMO = new URLSearchParams(location.search).has("demo");
 if(DEMO){ document.body.classList.add("is-demo"); $("demoBar").hidden=false; $("demoFab").hidden=false;
   SETTINGS.bank={bank:"Your bank",name:"Your business name",acc:"Your account number",branch:"Your branch code",type:""}; }
 /* Subscription: ISS sets activeUntil in brand.js; after that date online bookings pause (the boarder's data stays theirs) */
@@ -843,7 +843,7 @@ function doneBlock(el, title, ref, amount, note){
   el.innerHTML=`<h3>${title}</h3><p class="muted">Reference <b><code>${ref}</code></b>. ${note}</p>
     ${cardUrl(ref,amount)?`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} ${esc(payWords())}</p>${cardBtn(ref, amount)}<p class="muted">Or pay by EFT:</p>`:`<p class="muted" style="font-weight:700;color:var(--ink)">Pay ${R(amount)} by EFT</p>`}${bankHtml(ref)}
     <button type="button" class="btn honey" data-paid>I've paid – let ${esc(BRAND.shortName||"us")} know</button>`;
-  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="setup.html">Get my own app →</a>`);
+  if(DEMO) el.insertAdjacentHTML("beforeend",`<p class="note"><b>That's it!</b> In your own app this booking would now be in your Google Sheet and on your WhatsApp.</p><a class="btn primary" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a>`);
   if(!DEMO && !(matchMedia("(display-mode: standalone)").matches || navigator.standalone===true))
     el.insertAdjacentHTML("beforeend",`<p class="note"><b>📲 Keep this app on your phone</b> to check your booking, pay and see your dog's daily photos.</p><button type="button" class="btn ghost" data-install>Install app</button>`);
   const ib=el.querySelector("[data-install]"); if(ib) ib.onclick=()=>document.getElementById("installBtn").click();
@@ -1051,7 +1051,7 @@ function wireLogin(){
 }
 async function loadPhotos(){
   const box=$("photoStays");
-  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="setup.html">Get my own app →</a></div>`; return; }
+  if(DEMO){ box.innerHTML=`<div class="stay"><h2>Daily photos 📷</h2><p class="muted">In your own app, pet parents see photos of their dog playing and sleeping, every day of the stay. You add them from your phone in a few taps, and only that dog's owner can see them.</p><a class="btn primary" href="https://infinitysparklestudios.github.io/apps/boarding/setup.html">Get my own app →</a></div>`; return; }
   const stays=myStays();
   const signin=`<form class="stay" id="loginForm" novalidate><h2>${stays.length?"Another booking?":"Sign in to see your bookings &amp; photos"}</h2>
     <p class="muted">Use the WhatsApp number you booked with and any of your booking references. No password needed.</p>
@@ -1143,8 +1143,7 @@ async function lookupBoarder(slug){
 async function bootApp(){
   if(window.APP_SLUG && !DEMO){
     const L=await lookupBoarder(window.APP_SLUG);
-    if(!L || !L.ok){ try{ localStorage.removeItem("app-b"); }catch(e){}   // don't stay stuck on a business that no longer exists
-      pauseApp("App not found", "This booking app link is not active. Please check the link with your boarder – or scan their QR code again."); return; }
+    if(!L || !L.ok){ pauseApp("App not found", "This booking app link is not active. Please check the link with your boarder."); return; }
     if(!BRAND.name){ BRAND.name=L.name; BRAND.shortName=L.name; }
     if(!SETTINGS.refPrefix) BRAND.refPrefix=String(L.name).toUpperCase().replace(/[^A-Z]/g,"").slice(0,5)||"REF";
     applyBrand();
